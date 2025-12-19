@@ -1,0 +1,54 @@
+import type { GetServerSidePropsContext } from "next";
+
+import { getServerSession } from "@bookph/core/features/auth/lib/getServerSession";
+import { LicenseKeySingleton } from "@bookph/core/features/ee/common/server/LicenseKeyService";
+import { getDeploymentKey } from "@bookph/core/features/ee/deployment/lib/getDeploymentKey";
+import { DeploymentRepository } from "@bookph/core/lib/server/repository/deployment";
+import prisma from "@bookph/core/prisma";
+import { UserPermissionRole } from "@bookph/core/prisma/enums";
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { req } = context;
+
+  const userCount = await prisma.user.count();
+
+  const session = await getServerSession({ req });
+
+  if (session?.user.role && session?.user.role !== UserPermissionRole.ADMIN) {
+    return {
+      notFound: true,
+    } as const;
+  }
+  // direct access is intentional.
+  const deploymentRepo = new DeploymentRepository(prisma);
+  const licenseKey = await deploymentRepo.getLicenseKeyWithId(1);
+
+  // Check existent CALCOM_LICENSE_KEY env var and account for it
+  if (!!process.env.CALCOM_LICENSE_KEY && !licenseKey) {
+    await prisma.deployment.upsert({
+      where: { id: 1 },
+      update: {
+        licenseKey: process.env.CALCOM_LICENSE_KEY,
+        agreedLicenseAt: new Date(),
+      },
+      create: {
+        licenseKey: process.env.CALCOM_LICENSE_KEY,
+        agreedLicenseAt: new Date(),
+      },
+    });
+  }
+
+  // Check if there's already a valid license using LicenseKeyService
+  const licenseKeyService = await LicenseKeySingleton.getInstance(deploymentRepo);
+  const hasValidLicense = await licenseKeyService.checkLicense();
+
+  const isFreeLicense = (await getDeploymentKey(deploymentRepo)) === "";
+
+  return {
+    props: {
+      isFreeLicense,
+      userCount,
+      hasValidLicense,
+    },
+  };
+}

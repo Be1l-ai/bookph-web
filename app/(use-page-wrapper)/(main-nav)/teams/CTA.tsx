@@ -1,0 +1,24 @@
+"use client";
+// BookPH: Telemetry disabled - import posthog from "posthog-js";
+
+import { WEBAPP_URL } from "@bookph/core/lib/constants";
+import { useLocale } from "@bookph/core/lib/hooks/useLocale";
+import { Button } from "@bookph/ui/components/button";
+
+export const TeamsCTA = () => {
+  const { t } = useLocale();
+  return (
+    <Button
+      data-testid="new-team-btn"
+      variant="fab"
+      StartIcon="plus"
+      size="sm"
+      type="button"
+      onClick={() => {
+        // BookPH: Telemetry disabled - posthog.capture("add_team_button_clicked")
+      }}
+      href={`${WEBAPP_URL}/settings/teams/new?returnTo=${WEBAPP_URL}/teams`}>
+      {t("new")}
+    </Button>
+  );
+};
