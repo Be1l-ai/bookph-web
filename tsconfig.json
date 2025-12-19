@@ -1,5 +1,5 @@
 {
-  "extends": "@bookph/tsconfig/nextjs.json",
+  "extends": "@bookph/core/tsconfig/nextjs.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

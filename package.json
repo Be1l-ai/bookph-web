@@ -8,6 +8,7 @@
   },
   "author": "Be1l-ai",
   "license": "AGPL-3.0",
+  "packageManager": "pnpm@9.15.0",
   "scripts": {
     "analyze": "ANALYZE=true next build",
     "analyze:server": "BUNDLE_ANALYZE=server next build",
@@ -37,8 +38,8 @@
     "yarn": "3.4.1"
   },
   "dependencies": {
-    "@bookph/core": "github:Be1l-ai/bookph-core",
-    "@bookph/ui": "github:Be1l-ai/bookph-ui",
+    "@bookph/core": "workspace:../bookph-core",
+    "@bookph/ui": "workspace:../bookph-ui",
     "@boxyhq/saml-jackson": "1.52.2",
     "@daily-co/daily-js": "^0.83.1",
     "@daily-co/daily-react": "^0.23.2",
@@ -151,9 +152,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.19.6",
-    "@calcom/config": "workspace:*",
-    "@calcom/eslint-config": "workspace:*",
-    "@calcom/types": "workspace:*",
     "@microsoft/microsoft-graph-types-beta": "0.15.0-preview",
     "@playwright/test": "^1.45.3",
     "@tailwindcss/postcss": "^4.0.0",

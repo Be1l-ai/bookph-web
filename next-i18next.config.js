@@ -1,5 +1,5 @@
 const path = require("path");
-const i18nConfig = require("@calcom/config/next-i18next.config");
+const i18nConfig = require("@bookph/core/config/next-i18next.config.js");
 
 /** @type {import("next-i18next").UserConfig} */
 const config = {
