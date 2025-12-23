@@ -5,7 +5,7 @@ import { SessionProvider } from "next-auth/react";
 import CacheProvider from "react-inlinesvg/provider";
 
 import { WebPushProvider } from "@bookph/core/features/notifications/WebPushContext";
-import { NotificationSoundHandler } from "@calcom/web/components/notification-sound-handler";
+import { NotificationSoundHandler } from "~/components/notification-sound-handler";
 
 import useIsBookingPage from "@lib/hooks/useIsBookingPage";
 

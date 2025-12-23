@@ -1,4 +1,4 @@
-import { getDate } from "@calcom/web/test/utils/bookingScenario/bookingScenario";
+import { getDate } from "~/test/utils/bookingScenario/bookingScenario";
 
 import type { Tracking } from "@bookph/core/features/bookings/lib/handleNewBooking/types";
 import type { SchedulingType } from "@bookph/core/prisma/client";

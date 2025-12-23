@@ -15,7 +15,7 @@ import localFont from "next/font/local";
 import Head from "next/head";
 import Script from "next/script";
 
-import "@calcom/embed-core/src/embed-iframe";
+import "@bookph/core/embeds/embed-core/src/embed-iframe";
 import LicenseRequired from "@bookph/core/features/ee/common/components/LicenseRequired";
 import { IS_CALCOM, WEBAPP_URL } from "@bookph/core/lib/constants";
 import { getCalcomUrl } from "@bookph/core/lib/getCalcomUrl";

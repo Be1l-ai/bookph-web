@@ -10,8 +10,8 @@ import {
   getMockBookingAttendee,
   getDate,
   mockCalendar,
-} from "@calcom/web/test/utils/bookingScenario/bookingScenario";
-import { expectBookingRequestRescheduledEmails } from "@calcom/web/test/utils/bookingScenario/expects";
+} from "~/test/utils/bookingScenario/bookingScenario";
+import { expectBookingRequestRescheduledEmails } from "~/test/utils/bookingScenario/expects";
 
 import type { Request, Response } from "express";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -21,7 +21,7 @@ import { SchedulingType, MembershipRole } from "@bookph/core/prisma/enums";
 import { BookingStatus } from "@bookph/core/prisma/enums";
 import type { TRequestRescheduleInputSchema } from "@bookph/core/trpc/server/routers/viewer/bookings/requestReschedule.schema";
 import type { TrpcSessionUser } from "@bookph/core/trpc/server/types";
-import { test } from "@calcom/web/test/fixtures/fixtures";
+import { test } from "~/test/fixtures/fixtures";
 
 export type CustomNextApiRequest = NextApiRequest & Request;
 
@@ -36,7 +36,7 @@ describe("Handler: requestReschedule", () => {
       emails,
     }) => {
       const { requestRescheduleHandler } = await import(
-        "@calcom/trpc/server/routers/viewer/bookings/requestReschedule.handler"
+        "@bookph/core/trpc/server/routers/viewer/bookings/requestReschedule.handler"
       );
       const booker = getBooker({
         email: "booker@example.com",
@@ -102,7 +102,10 @@ describe("Handler: requestReschedule", () => {
             },
           ],
           organizer,
-          apps: [TestData.apps["google-calendar"], TestData.apps["daily-video"]],
+          apps: [
+            TestData.apps["google-calendar"],
+            TestData.apps["daily-video"],
+          ],
         })
       );
 
@@ -142,7 +145,7 @@ describe("Handler: requestReschedule", () => {
       emails,
     }) => {
       const { requestRescheduleHandler } = await import(
-        "@calcom/trpc/server/routers/viewer/bookings/requestReschedule.handler"
+        "@bookph/core/trpc/server/routers/viewer/bookings/requestReschedule.handler"
       );
       const booker = getBooker({
         email: "booker@example.com",
@@ -222,7 +225,10 @@ describe("Handler: requestReschedule", () => {
             },
           ],
           organizer,
-          apps: [TestData.apps["google-calendar"], TestData.apps["daily-video"]],
+          apps: [
+            TestData.apps["google-calendar"],
+            TestData.apps["daily-video"],
+          ],
         })
       );
 
@@ -257,9 +263,11 @@ describe("Handler: requestReschedule", () => {
 
     test(`should allow team admin to request-reschedule for a team booking and use organizer's credentials
           1. Team admin (non-organizer) can request reschedule with proper permissions
-          2. Organizer's credentials are used to delete calendar events`, async ({ emails }) => {
+          2. Organizer's credentials are used to delete calendar events`, async ({
+      emails,
+    }) => {
       const { requestRescheduleHandler } = await import(
-        "@calcom/trpc/server/routers/viewer/bookings/requestReschedule.handler"
+        "@bookph/core/trpc/server/routers/viewer/bookings/requestReschedule.handler"
       );
 
       const booker = getBooker({
@@ -379,7 +387,10 @@ describe("Handler: requestReschedule", () => {
           ],
           organizer,
           usersApartFromOrganizer: [teamAdmin],
-          apps: [TestData.apps["google-calendar"], TestData.apps["daily-video"]],
+          apps: [
+            TestData.apps["google-calendar"],
+            TestData.apps["daily-video"],
+          ],
         })
       );
 
@@ -415,14 +426,15 @@ describe("Handler: requestReschedule", () => {
       const deleteEventCalls = calendarMock.deleteEventCalls;
       expect(deleteEventCalls.length).toBe(1);
 
-      const credentialUsed = deleteEventCalls[0].calendarServiceConstructorArgs.credential;
+      const credentialUsed =
+        deleteEventCalls[0].calendarServiceConstructorArgs.credential;
       expect(credentialUsed.userId).toBe(organizer.id);
       expect(credentialUsed.id).toBe(1);
     });
 
     test(`should reject request-reschedule from team member without proper permissions`, async () => {
       const { requestRescheduleHandler } = await import(
-        "@calcom/trpc/server/routers/viewer/bookings/requestReschedule.handler"
+        "@bookph/core/trpc/server/routers/viewer/bookings/requestReschedule.handler"
       );
 
       const booker = getBooker({
@@ -520,7 +532,10 @@ describe("Handler: requestReschedule", () => {
           ],
           organizer,
           usersApartFromOrganizer: [teamMember],
-          apps: [TestData.apps["google-calendar"], TestData.apps["daily-video"]],
+          apps: [
+            TestData.apps["google-calendar"],
+            TestData.apps["daily-video"],
+          ],
         })
       );
 
@@ -542,10 +557,14 @@ describe("Handler: requestReschedule", () => {
             },
           })
         )
-      ).rejects.toThrow("User does not have permission to request reschedule for this booking");
+      ).rejects.toThrow(
+        "User does not have permission to request reschedule for this booking"
+      );
     });
 
-    test.todo("Verify that the email should go to organizer as well as the team members");
+    test.todo(
+      "Verify that the email should go to organizer as well as the team members"
+    );
   });
 });
 
@@ -554,7 +573,9 @@ function getTrpcHandlerData({
   user,
 }: {
   input: TRequestRescheduleInputSchema;
-  user: Partial<Omit<NonNullable<TrpcSessionUser>, "id" | "email" | "username">> &
+  user: Partial<
+    Omit<NonNullable<TrpcSessionUser>, "id" | "email" | "username">
+  > &
     Pick<NonNullable<TrpcSessionUser>, "id" | "email" | "username">;
 }) {
   return {

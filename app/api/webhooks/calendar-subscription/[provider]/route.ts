@@ -13,11 +13,13 @@ import { FeaturesRepository } from "@bookph/core/features/flags/features.reposit
 import logger from "@bookph/core/lib/logger";
 import { SelectedCalendarRepository } from "@bookph/core/lib/server/repository/SelectedCalendarRepository";
 import { prisma } from "@bookph/core/prisma";
-import { defaultResponderForAppDir } from "@calcom/web/app/api/defaultResponderForAppDir";
+import { defaultResponderForAppDir } from "~/app/api/defaultResponderForAppDir";
 
 const log = logger.getSubLogger({ prefix: ["calendar-webhook"] });
 
-function extractAndValidateProviderFromParams(params: Params): CalendarSubscriptionProvider | null {
+function extractAndValidateProviderFromParams(
+  params: Params
+): CalendarSubscriptionProvider | null {
   if (!("provider" in params)) {
     return null;
   }
@@ -39,10 +41,18 @@ function extractAndValidateProviderFromParams(params: Params): CalendarSubscript
  * @param {Promise<Params>} context.params - A promise that resolves to the route parameters.
  * @returns {Promise<NextResponse>} - A promise that resolves to the response object.
  */
-async function postHandler(request: NextRequest, ctx: { params: Promise<Params> }) {
-  const providerFromParams = extractAndValidateProviderFromParams(await ctx.params);
+async function postHandler(
+  request: NextRequest,
+  ctx: { params: Promise<Params> }
+) {
+  const providerFromParams = extractAndValidateProviderFromParams(
+    await ctx.params
+  );
   if (!providerFromParams) {
-    return NextResponse.json({ message: "Unsupported provider" }, { status: 400 });
+    return NextResponse.json(
+      { message: "Unsupported provider" },
+      { status: 400 }
+    );
   }
 
   try {
@@ -51,7 +61,9 @@ async function postHandler(request: NextRequest, ctx: { params: Promise<Params> 
     const calendarSyncService = new CalendarSyncService({
       bookingRepository,
     });
-    const calendarCacheEventRepository = new CalendarCacheEventRepository(prisma);
+    const calendarCacheEventRepository = new CalendarCacheEventRepository(
+      prisma
+    );
     const calendarCacheEventService = new CalendarCacheEventService({
       calendarCacheEventRepository,
     });
@@ -72,10 +84,16 @@ async function postHandler(request: NextRequest, ctx: { params: Promise<Params> 
 
     if (!isCacheEnabled && !isSyncEnabled) {
       log.debug("No cache or sync enabled");
-      return NextResponse.json({ message: "No cache or sync enabled" }, { status: 200 });
+      return NextResponse.json(
+        { message: "No cache or sync enabled" },
+        { status: 200 }
+      );
     }
 
-    await calendarSubscriptionService.processWebhook(providerFromParams, request);
+    await calendarSubscriptionService.processWebhook(
+      providerFromParams,
+      request
+    );
     return NextResponse.json({ message: "Webhook processed" }, { status: 200 });
   } catch (error) {
     log.error("Error processing webhook", { error });

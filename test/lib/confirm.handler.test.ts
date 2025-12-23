@@ -4,7 +4,7 @@ import {
   getScenarioData,
   TestData,
   mockSuccessfulVideoMeetingCreation,
-} from "@calcom/web/test/utils/bookingScenario/bookingScenario";
+} from "~/test/utils/bookingScenario/bookingScenario";
 
 import { describe, it, beforeEach, vi, expect } from "vitest";
 
@@ -22,7 +22,10 @@ describe("confirmHandler", () => {
   it("should pass hideCalendarNotes property to CalendarEvent when enabled", async () => {
     vi.setSystemTime("2050-01-07T00:00:00Z");
 
-    const handleConfirmationSpy = vi.spyOn(handleConfirmationModule, "handleConfirmation");
+    const handleConfirmationSpy = vi.spyOn(
+      handleConfirmationModule,
+      "handleConfirmation"
+    );
 
     const attendeeUser = getOrganizer({
       email: "test@example.com",
@@ -73,7 +76,11 @@ describe("confirmHandler", () => {
             iCalUID,
             location: "integrations:daily",
             attendees: [attendeeUser],
-            responses: { name: attendeeUser.name, email: attendeeUser.email, notes: "Sensitive information" },
+            responses: {
+              name: attendeeUser.name,
+              email: attendeeUser.email,
+              notes: "Sensitive information",
+            },
             user: { id: organizer.id },
           },
         ],
@@ -98,7 +105,12 @@ describe("confirmHandler", () => {
 
     const res = await confirmHandler({
       ctx,
-      input: { bookingId: 101, confirmed: true, reason: "", emailsEnabled: true },
+      input: {
+        bookingId: 101,
+        confirmed: true,
+        reason: "",
+        emailsEnabled: true,
+      },
     });
 
     expect(res?.status).toBe(BookingStatus.ACCEPTED);

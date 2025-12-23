@@ -6,7 +6,10 @@ import { getServerSession } from "@bookph/core/features/auth/lib/getServerSessio
 import { deriveAppDictKeyFromType } from "@bookph/core/lib/deriveAppDictKeyFromType";
 import { HttpError } from "@bookph/core/lib/http-error";
 import prisma from "@bookph/core/prisma";
-import type { AppDeclarativeHandler, AppHandler } from "@bookph/core/types/AppHandler";
+import type {
+  AppDeclarativeHandler,
+  AppHandler,
+} from "@bookph/core/types/AppHandler";
 
 const defaultIntegrationAddHandler = async ({
   slug,
@@ -24,13 +27,18 @@ const defaultIntegrationAddHandler = async ({
   createCredential: AppDeclarativeHandler["createCredential"];
 }) => {
   if (!user?.id) {
-    throw new HttpError({ statusCode: 401, message: "You must be logged in to do this" });
+    throw new HttpError({
+      statusCode: 401,
+      message: "You must be logged in to do this",
+    });
   }
   if (!supportsMultipleInstalls) {
     const alreadyInstalled = await prisma.credential.findFirst({
       where: {
         appId: slug,
-        ...(teamId ? { AND: [{ userId: user.id }, { teamId }] } : { userId: user.id }),
+        ...(teamId
+          ? { AND: [{ userId: user.id }, { teamId }] }
+          : { userId: user.id }),
       },
     });
     if (alreadyInstalled) {
@@ -38,7 +46,10 @@ const defaultIntegrationAddHandler = async ({
     }
   }
 
-  await throwIfNotHaveAdminAccessToTeam({ teamId: teamId ?? null, userId: user.id });
+  await throwIfNotHaveAdminAccessToTeam({
+    teamId: teamId ?? null,
+    userId: user.id,
+  });
 
   await createCredential({ user: user, appType, slug, teamId });
 };
@@ -56,18 +67,33 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const [appName, apiEndpoint] = args;
   try {
     /* Absolute path didn't work */
-    const handlerMap = (await import("@calcom/app-store/apps.server.generated")).apiHandlers;
+    const handlerMap = (
+      await import("@bookph/core/app-store/apps.server.generated")
+    ).apiHandlers;
     const handlerKey = deriveAppDictKeyFromType(appName, handlerMap);
     const handlers = await handlerMap[handlerKey as keyof typeof handlerMap];
-    if (!handlers) throw new HttpError({ statusCode: 404, message: `No handlers found for ${handlerKey}` });
-    const handler = handlers[apiEndpoint as keyof typeof handlers] as AppHandler;
+    if (!handlers)
+      throw new HttpError({
+        statusCode: 404,
+        message: `No handlers found for ${handlerKey}`,
+      });
+    const handler = handlers[
+      apiEndpoint as keyof typeof handlers
+    ] as AppHandler;
     if (typeof handler === "undefined")
-      throw new HttpError({ statusCode: 404, message: `API handler not found` });
+      throw new HttpError({
+        statusCode: 404,
+        message: `API handler not found`,
+      });
 
     if (typeof handler === "function") {
       await handler(req, res);
     } else {
-      await defaultIntegrationAddHandler({ user: req.session?.user, teamId: Number(teamId), ...handler });
+      await defaultIntegrationAddHandler({
+        user: req.session?.user,
+        teamId: Number(teamId),
+        ...handler,
+      });
       const redirectUrl = handler.redirect?.url ?? undefined;
       res.json({ url: redirectUrl, newTab: handler.redirect?.newTab });
     }

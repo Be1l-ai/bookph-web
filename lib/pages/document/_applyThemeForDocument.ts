@@ -1,7 +1,7 @@
 // Theme application function - will be stringified and injected. So, it must not use anything from the closure
 export const applyTheme = function () {
   try {
-    // This utility is a replica of @calcom/lib/webstorage.ts but we can reuse it because applyTheme is stringified and injected, so we can't have deps here
+    // This utility is a replica of @bookph/core/lib/webstorage.ts but we can reuse it because applyTheme is stringified and injected, so we can't have deps here
     const safeLocalStorage = {
       getItem: function (key: string) {
         try {

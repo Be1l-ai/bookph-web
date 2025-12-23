@@ -75,14 +75,14 @@ const mockChargeCredits = vi.fn();
 const mockSendCreditBalanceLimitReachedEmails = vi.fn();
 const mockSendCreditBalanceLowWarningEmails = vi.fn();
 
-vi.mock("@calcom/features/ee/billing/credit-service", () => ({
+vi.mock("@bookph/core/features/ee/billing/credit-service", () => ({
   CreditService: vi.fn().mockImplementation(() => ({
     hasAvailableCredits: mockHasAvailableCredits,
     chargeCredits: mockChargeCredits,
   })),
 }));
 
-vi.mock("@calcom/emails/email-manager", () => ({
+vi.mock("@bookph/core/emails/email-manager", () => ({
   sendCreditBalanceLimitReachedEmails: (...args: unknown[]) =>
     mockSendCreditBalanceLimitReachedEmails(...args),
   sendCreditBalanceLowWarningEmails: (...args: unknown[]) => mockSendCreditBalanceLowWarningEmails(...args),
@@ -91,13 +91,13 @@ vi.mock("@calcom/emails/email-manager", () => ({
 const mockFindByPhoneNumber = vi.fn();
 const mockFindByProviderAgentId = vi.fn();
 
-vi.mock("@calcom/features/calAIPhone/repositories/PrismaPhoneNumberRepository", () => ({
+vi.mock("@bookph/core/features/calAIPhone/repositories/PrismaPhoneNumberRepository", () => ({
   PrismaPhoneNumberRepository: vi.fn().mockImplementation(() => ({
     findByPhoneNumber: mockFindByPhoneNumber,
   })),
 }));
 
-vi.mock("@calcom/features/calAIPhone/repositories/PrismaAgentRepository", () => ({
+vi.mock("@bookph/core/features/calAIPhone/repositories/PrismaAgentRepository", () => ({
   PrismaAgentRepository: vi.fn().mockImplementation(() => ({
     findByProviderAgentId: mockFindByProviderAgentId,
   })),

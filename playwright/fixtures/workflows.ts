@@ -3,7 +3,7 @@ import { expect, type Page } from "@playwright/test";
 
 import prisma from "@bookph/core/prisma";
 import { WorkflowTriggerEvents } from "@bookph/core/prisma/enums";
-import type { Fixtures } from "@calcom/web/playwright/lib/fixtures";
+import type { Fixtures } from "~/playwright/lib/fixtures";
 
 import { localize } from "../lib/localize";
 
@@ -33,7 +33,11 @@ export function createWorkflowPageFixture(page: Page) {
     }
     if (trigger) {
       await page.locator("#trigger-select").click();
-      await page.getByTestId(`select-option-${trigger ?? WorkflowTriggerEvents.BEFORE_EVENT}`).click();
+      await page
+        .getByTestId(
+          `select-option-${trigger ?? WorkflowTriggerEvents.BEFORE_EVENT}`
+        )
+        .click();
       await selectEventType("30 min");
     }
     const workflow = await saveWorkflow();
@@ -49,7 +53,9 @@ export function createWorkflowPageFixture(page: Page) {
   };
 
   const saveWorkflow = async () => {
-    const submitPromise = page.waitForResponse("/api/trpc/workflows/update?batch=1");
+    const submitPromise = page.waitForResponse(
+      "/api/trpc/workflows/update?batch=1"
+    );
     const saveButton = await page.getByTestId("save-workflow");
     await saveButton.click();
     const response = await submitPromise;
@@ -59,7 +65,9 @@ export function createWorkflowPageFixture(page: Page) {
   };
 
   const assertListCount = async (count: number) => {
-    const workflowListCount = page.locator('[data-testid="workflow-list"] > li');
+    const workflowListCount = page.locator(
+      '[data-testid="workflow-list"] > li'
+    );
     await expect(workflowListCount.first()).toBeVisible();
     await page.reload();
     await expect(workflowListCount).toHaveCount(count);
@@ -72,14 +80,18 @@ export function createWorkflowPageFixture(page: Page) {
   };
 
   const editSelectedWorkflow = async (name: string) => {
-    const selectedWorkflow = page.getByTestId("workflow-list").getByTestId(nameToTestId(name));
+    const selectedWorkflow = page
+      .getByTestId("workflow-list")
+      .getByTestId(nameToTestId(name));
     const editButton = selectedWorkflow.getByRole("button").nth(0);
 
     await editButton.click();
   };
 
   const hasWorkflowInList = async (name: string, negate?: true) => {
-    const selectedWorkflow = page.getByTestId("workflow-list").getByTestId(nameToTestId(name));
+    const selectedWorkflow = page
+      .getByTestId("workflow-list")
+      .getByTestId(nameToTestId(name));
 
     if (negate) {
       await expect(selectedWorkflow).toBeHidden();
@@ -107,10 +119,16 @@ export function createWorkflowPageFixture(page: Page) {
   };
 
   const selectedWorkflowPage = async (name: string) => {
-    await page.getByTestId("workflow-list").getByTestId(nameToTestId(name)).click();
+    await page
+      .getByTestId("workflow-list")
+      .getByTestId(nameToTestId(name))
+      .click();
   };
 
-  const workflowOptionsAreDisabled = async (workflow: string, negate?: boolean) => {
+  const workflowOptionsAreDisabled = async (
+    workflow: string,
+    negate?: boolean
+  ) => {
     const getWorkflowButton = async (buttonTestId: string) =>
       page.getByTestId(nameToTestId(workflow)).getByTestId(buttonTestId);
     const [editButton, deleteButton] = await Promise.all([
@@ -122,7 +140,10 @@ export function createWorkflowPageFixture(page: Page) {
     expect(deleteButton.isDisabled()).toBeTruthy();
   };
 
-  const assertWorkflowWasTriggered = async (emails: Fixtures["emails"], emailsToBeReceived: string[]) => {
+  const assertWorkflowWasTriggered = async (
+    emails: Fixtures["emails"],
+    emailsToBeReceived: string[]
+  ) => {
     const message = await emails.messages();
     emailsToBeReceived.forEach((email) => {
       expect(message?.items).toEqual(
@@ -136,7 +157,10 @@ export function createWorkflowPageFixture(page: Page) {
     });
   };
 
-  const assertWorkflowReminders = async (eventTypeId: number, count: number) => {
+  const assertWorkflowReminders = async (
+    eventTypeId: number,
+    count: number
+  ) => {
     const booking = await prisma.booking.findFirst({
       where: {
         eventTypeId,

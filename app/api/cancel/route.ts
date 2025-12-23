@@ -9,7 +9,7 @@ import { checkRateLimitAndThrowError } from "@bookph/core/lib/checkRateLimitAndT
 import getIP from "@bookph/core/lib/getIP";
 import { piiHasher } from "@bookph/core/lib/server/PiiHasher";
 import { bookingCancelWithCsrfSchema } from "@bookph/core/prisma/zod-utils";
-import { validateCsrfToken } from "@calcom/web/lib/validateCsrfToken";
+import { validateCsrfToken } from "~/lib/validateCsrfToken";
 
 import { buildLegacyRequest } from "@lib/buildLegacyCtx";
 
@@ -18,7 +18,10 @@ async function handler(req: NextRequest) {
   try {
     appDirRequestBody = await req.json();
   } catch {
-    return NextResponse.json({ success: false, message: "Invalid JSON" }, { status: 400 });
+    return NextResponse.json(
+      { success: false, message: "Invalid JSON" },
+      { status: 400 }
+    );
   }
   const bookingData = bookingCancelWithCsrfSchema.parse(appDirRequestBody);
 
@@ -27,7 +30,9 @@ async function handler(req: NextRequest) {
     return csrfError;
   }
 
-  const session = await getServerSession({ req: buildLegacyRequest(await headers(), await cookies()) });
+  const session = await getServerSession({
+    req: buildLegacyRequest(await headers(), await cookies()),
+  });
 
   // Rate limit: 10 booking cancellations per 60 seconds per user (or IP if not authenticated)
   const identifier = session?.user?.id

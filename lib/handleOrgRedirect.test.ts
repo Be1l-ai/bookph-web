@@ -14,7 +14,7 @@ const prismaMock = vi.hoisted(() => ({
   },
 }));
 
-vi.mock("@calcom/prisma", () => ({
+vi.mock("@bookph/core/prisma", () => ({
   default: prismaMock,
 }));
 

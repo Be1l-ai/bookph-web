@@ -1,5 +1,5 @@
 import prismock from "../../../../../../../tests/libs/__mocks__/prisma";
-import "@calcom/lib/server/__mocks__/serviceAccountKey";
+import "@bookph/core/lib/server/__mocks__/serviceAccountKey";
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
@@ -9,7 +9,7 @@ import { handleCreateSelectedCalendars, isSameEmail } from "../route";
 
 // Mock GoogleCalendarService
 const getPrimaryCalendarMock = vi.fn();
-vi.mock("@calcom/app-store/googlecalendar/lib/CalendarService", () => {
+vi.mock("@bookph/core/app-store/googlecalendar/lib/CalendarService", () => {
   return {
     default: vi.fn().mockImplementation(() => ({
       getPrimaryCalendar: getPrimaryCalendarMock,

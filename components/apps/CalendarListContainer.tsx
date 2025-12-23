@@ -3,8 +3,8 @@
 import { useEffect, Suspense } from "react";
 
 import { InstallAppButton } from "@bookph/core/app-store/InstallAppButton";
-import { DestinationCalendarSettingsWebWrapper } from "@calcom/atoms/destination-calendar/wrappers/DestinationCalendarSettingsWebWrapper";
-import { SelectedCalendarsSettingsWebWrapper } from "@calcom/atoms/selected-calendars/wrappers/SelectedCalendarsSettingsWebWrapper";
+import { DestinationCalendarSettingsWebWrapper } from "@bookph/core/atoms/destination-calendar/wrappers/DestinationCalendarSettingsWebWrapper";
+import { SelectedCalendarsSettingsWebWrapper } from "@bookph/core/atoms/selected-calendars/wrappers/SelectedCalendarsSettingsWebWrapper";
 import AppListCard from "@bookph/core/features/apps/components/AppListCard";
 import { SkeletonLoader } from "@bookph/core/features/apps/components/SkeletonLoader";
 import SettingsHeader from "@bookph/core/features/settings/appDir/SettingsHeader";
@@ -16,7 +16,7 @@ import { EmptyScreen } from "@bookph/ui/components/empty-screen";
 import { ShellSubHeading } from "@bookph/ui/components/layout";
 import { List } from "@bookph/ui/components/list";
 import { showToast } from "@bookph/ui/components/toast";
-import { revalidateSettingsCalendars } from "@calcom/web/app/cache/path/settings/my-account";
+import { revalidateSettingsCalendars } from "~/app/cache/path/settings/my-account";
 
 import { QueryCell } from "@lib/QueryCell";
 import useRouterQuery from "@lib/hooks/useRouterQuery";
@@ -32,7 +32,10 @@ type Props = {
 
 function CalendarList(props: Props) {
   const { t } = useLocale();
-  const query = trpc.viewer.apps.integrations.useQuery({ variant: "calendar", onlyInstalled: false });
+  const query = trpc.viewer.apps.integrations.useQuery({
+    variant: "calendar",
+    onlyInstalled: false,
+  });
 
   return (
     <QueryCell
@@ -70,7 +73,11 @@ const AddCalendarButton = () => {
   const { t } = useLocale();
   return (
     <>
-      <Button color="secondary" StartIcon="plus" href="/apps/categories/calendar">
+      <Button
+        color="secondary"
+        StartIcon="plus"
+        href="/apps/categories/calendar"
+      >
         {t("add_calendar")}
       </Button>
     </>
@@ -83,7 +90,8 @@ export const CalendarListContainerSkeletonLoader = () => {
     <SettingsHeader
       title={t("calendars")}
       description={t("calendars_description")}
-      CTA={<AddCalendarButton />}>
+      CTA={<AddCalendarButton />}
+    >
       <SkeletonLoader />
     </SettingsHeader>
   );
@@ -136,8 +144,10 @@ export function CalendarListContainer({
     <SettingsHeader
       title={t("calendars")}
       description={t("calendars_description")}
-      CTA={<AddCalendarButton />}>
-      {!!data.connectedCalendars.length || !!installedCalendars?.items.length ? (
+      CTA={<AddCalendarButton />}
+    >
+      {!!data.connectedCalendars.length ||
+      !!installedCalendars?.items.length ? (
         <>
           {heading && (
             <>
@@ -158,7 +168,11 @@ export function CalendarListContainer({
           {!!data?.connectedCalendars.length && (
             <ShellSubHeading
               className="mt-4"
-              title={<SubHeadingTitleWithConnections title={t("connect_additional_calendar")} />}
+              title={
+                <SubHeadingTitleWithConnections
+                  title={t("connect_additional_calendar")}
+                />
+              }
             />
           )}
           <CalendarList onChanged={onChanged} />
@@ -171,7 +185,11 @@ export function CalendarListContainer({
           })}
           description={t(`no_category_apps_description_calendar`)}
           buttonRaw={
-            <Button color="secondary" data-testid="connect-calendar-apps" href="/apps/categories/calendar">
+            <Button
+              color="secondary"
+              data-testid="connect-calendar-apps"
+              href="/apps/categories/calendar"
+            >
               {t(`connect_calendar_apps`)}
             </Button>
           }

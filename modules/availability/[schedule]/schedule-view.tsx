@@ -5,7 +5,7 @@ import { revalidateSchedulePage } from "app/(use-page-wrapper)/availability/[sch
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-import { AvailabilitySettings } from "@calcom/atoms/availability/AvailabilitySettings";
+import { AvailabilitySettings } from "@bookph/core/atoms/availability/AvailabilitySettings";
 import type { BulkUpdatParams } from "@bookph/core/features/eventtypes/components/BulkEditDefaultForEventsModal";
 import { withErrorFromUnknown } from "@bookph/core/lib/getClientErrorFromUnknown";
 import { useLocale } from "@bookph/core/lib/hooks/useLocale";
@@ -68,11 +68,17 @@ export const AvailabilitySettingsWebWrapper = ({
         // check weather the default schedule has been changed by comparing  previous default schedule id and current default schedule id.
         if (prevDefaultId !== currentDefaultId) {
           // if not equal, invalidate previous default schedule id and refetch previous default schedule id.
-          utils.viewer.availability.schedule.get.invalidate({ scheduleId: prevDefaultId });
-          utils.viewer.availability.schedule.get.refetch({ scheduleId: prevDefaultId });
+          utils.viewer.availability.schedule.get.invalidate({
+            scheduleId: prevDefaultId,
+          });
+          utils.viewer.availability.schedule.get.refetch({
+            scheduleId: prevDefaultId,
+          });
         }
       }
-      utils.viewer.availability.schedule.get.invalidate({ scheduleId: data.schedule.id });
+      utils.viewer.availability.schedule.get.invalidate({
+        scheduleId: data.schedule.id,
+      });
       revalidateSchedulePage(scheduleId);
       utils.viewer.availability.list.invalidate();
       revalidateAvailabilityList();

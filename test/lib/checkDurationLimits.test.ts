@@ -5,7 +5,7 @@ import { checkDurationLimit, checkDurationLimits } from "@bookph/core/features/b
 import { validateIntervalLimitOrder } from "@bookph/core/lib/intervalLimits/validateIntervalLimitOrder";
 
 const mockGetTotalBookingDuration = vi.fn();
-vi.mock("@calcom/features/bookings/repositories/BookingRepository", () => ({
+vi.mock("@bookph/core/features/bookings/repositories/BookingRepository", () => ({
   BookingRepository: vi.fn().mockImplementation(() => ({
     getTotalBookingDuration: mockGetTotalBookingDuration,
   })),

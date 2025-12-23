@@ -10,7 +10,8 @@ import prisma from "@bookph/core/prisma";
 import { CreditType } from "@bookph/core/prisma/enums";
 
 async function postHandler(req: NextRequest) {
-  const apiKey = req.headers.get("authorization") || req.nextUrl.searchParams.get("apiKey");
+  const apiKey =
+    req.headers.get("authorization") || req.nextUrl.searchParams.get("apiKey");
 
   if (process.env.CRON_API_KEY !== apiKey) {
     return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
@@ -37,7 +38,9 @@ async function postHandler(req: NextRequest) {
   });
 
   let pricesUpdated = 0;
-  const { CreditService } = await import("@calcom/features/ee/billing/credit-service");
+  const { CreditService } = await import(
+    "@bookph/core/features/ee/billing/credit-service"
+  );
 
   const creditService = new CreditService();
 
@@ -47,7 +50,9 @@ async function postHandler(req: NextRequest) {
 
       try {
         const { price, numSegments } = await twilio.getMessageInfo(log.smsSid);
-        const credits = price ? creditService.calculateCreditsFromPrice(price) : null;
+        const credits = price
+          ? creditService.calculateCreditsFromPrice(price)
+          : null;
         if (!credits) return;
 
         const updatedLog = await prisma.creditExpenseLog.update({
@@ -82,7 +87,10 @@ async function postHandler(req: NextRequest) {
           });
         }
 
-        if (!updatedLog.creditBalance.teamId && !updatedLog.creditBalance.userId) {
+        if (
+          !updatedLog.creditBalance.teamId &&
+          !updatedLog.creditBalance.userId
+        ) {
           logger.error(`teamId or userId missing for expense log ${log.id}`);
           return;
         }
@@ -92,12 +100,16 @@ async function postHandler(req: NextRequest) {
           userId: updatedLog.creditBalance.userId,
         });
 
-        const remainingMonthlyCredits = Math.max(0, availableCredits.totalRemainingMonthlyCredits);
+        const remainingMonthlyCredits = Math.max(
+          0,
+          availableCredits.totalRemainingMonthlyCredits
+        );
 
         await creditService.handleLowCreditBalance({
           userId: updatedLog.creditBalance.userId,
           teamId: updatedLog.creditBalance.teamId,
-          remainingCredits: remainingMonthlyCredits + availableCredits.additionalCredits,
+          remainingCredits:
+            remainingMonthlyCredits + availableCredits.additionalCredits,
         });
 
         pricesUpdated++;

@@ -44,7 +44,7 @@ const createMockCredential = (overrides: Partial<MockCredential> = {}): MockCred
 });
 
 // Mock the useLocale hook
-vi.mock("@calcom/lib/hooks/useLocale", () => ({
+vi.mock("@bookph/core/lib/hooks/useLocale", () => ({
   useLocale: () => ({
     t: (key: string) => {
       const translations = {

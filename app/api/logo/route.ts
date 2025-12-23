@@ -123,7 +123,7 @@ async function getTeamLogos(subdomain: string, isValidOrgDomain: boolean) {
       throw new Error("No custom logo needed");
     }
     // load from DB
-    const { default: prisma } = await import("@calcom/prisma");
+    const { default: prisma } = await import("@bookph/core/prisma");
     const team = await prisma.team.findFirst({
       where: {
         slug: subdomain,
@@ -165,7 +165,9 @@ async function getTeamLogos(subdomain: string, isValidOrgDomain: boolean) {
  */
 async function getHandler(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const parsedQuery = logoApiSchema.parse(Object.fromEntries(searchParams.entries()));
+  const parsedQuery = logoApiSchema.parse(
+    Object.fromEntries(searchParams.entries())
+  );
 
   // Create a legacy request object for compatibility
   const legacyReq = buildLegacyRequest(await headers(), await cookies());
@@ -185,9 +187,13 @@ async function getHandler(request: NextRequest) {
   const teamLogos = await getTeamLogos(subdomain, isValidOrgDomain);
 
   // Resolve all icon types to team logos, falling back to Cal.com defaults.
-  const type: LogoType = parsedQuery?.type && isValidLogoType(parsedQuery.type) ? parsedQuery.type : "logo";
+  const type: LogoType =
+    parsedQuery?.type && isValidLogoType(parsedQuery.type)
+      ? parsedQuery.type
+      : "logo";
   const logoDefinition = logoDefinitions[type];
-  const filteredLogo = teamLogos[logoDefinition.source] ?? logoDefinition.fallback;
+  const filteredLogo =
+    teamLogos[logoDefinition.source] ?? logoDefinition.fallback;
 
   try {
     const response = await fetch(filteredLogo);
@@ -197,14 +203,17 @@ async function getHandler(request: NextRequest) {
 
     // Resize the team logos if needed
     if (teamLogos[logoDefinition.source] && logoDefinition.w) {
-      const { resizeImage } = await import("@calcom/lib/server/imageUtils");
-      const { buffer: outBuffer, contentType: outContentType } = await resizeImage({
-        buffer,
-        width: logoDefinition.w,
-        height: logoDefinition.h,
-        quality: 100,
-        contentType,
-      });
+      const { resizeImage } = await import(
+        "@bookph/core/lib/server/imageUtils"
+      );
+      const { buffer: outBuffer, contentType: outContentType } =
+        await resizeImage({
+          buffer,
+          width: logoDefinition.w,
+          height: logoDefinition.h,
+          quality: 100,
+          contentType,
+        });
       buffer = outBuffer;
       contentType = outContentType;
     }
@@ -214,11 +223,17 @@ async function getHandler(request: NextRequest) {
 
     // Set the appropriate headers
     imageResponse.headers.set("Content-Type", contentType);
-    imageResponse.headers.set("Cache-Control", "s-maxage=86400, stale-while-revalidate=60");
+    imageResponse.headers.set(
+      "Cache-Control",
+      "s-maxage=86400, stale-while-revalidate=60"
+    );
 
     return imageResponse;
   } catch (error) {
-    return NextResponse.json({ error: "Failed fetching logo" }, { status: 404 });
+    return NextResponse.json(
+      { error: "Failed fetching logo" },
+      { status: 404 }
+    );
   }
 }
 

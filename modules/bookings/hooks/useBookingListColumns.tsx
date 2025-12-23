@@ -5,7 +5,7 @@ import { ColumnFilterType } from "@bookph/core/features/data-table";
 import { isSeparatorRow } from "@bookph/core/features/data-table/lib/separator";
 import { useLocale } from "@bookph/core/lib/hooks/useLocale";
 import useMeQuery from "@bookph/core/trpc/react/hooks/useMeQuery";
-import BookingListItem from "@calcom/web/components/booking/BookingListItem";
+import BookingListItem from "~/components/booking/BookingListItem";
 
 import type { RowData, BookingListingStatus } from "../types";
 
@@ -28,42 +28,51 @@ export function useBookingListColumns({
     const columnHelper = createColumnHelper<RowData>();
 
     return [
-      columnHelper.accessor((row) => !isSeparatorRow(row) && row.booking.eventType.id, {
-        id: "eventTypeId",
-        header: t("event_type"),
-        enableColumnFilter: true,
-        enableSorting: false,
-        cell: () => null,
-        meta: {
-          filter: {
-            type: ColumnFilterType.MULTI_SELECT,
+      columnHelper.accessor(
+        (row) => !isSeparatorRow(row) && row.booking.eventType.id,
+        {
+          id: "eventTypeId",
+          header: t("event_type"),
+          enableColumnFilter: true,
+          enableSorting: false,
+          cell: () => null,
+          meta: {
+            filter: {
+              type: ColumnFilterType.MULTI_SELECT,
+            },
           },
-        },
-      }),
-      columnHelper.accessor((row) => !isSeparatorRow(row) && row.booking.eventType.team?.id, {
-        id: "teamId",
-        header: t("team"),
-        enableColumnFilter: true,
-        enableSorting: false,
-        cell: () => null,
-        meta: {
-          filter: {
-            type: ColumnFilterType.MULTI_SELECT,
+        }
+      ),
+      columnHelper.accessor(
+        (row) => !isSeparatorRow(row) && row.booking.eventType.team?.id,
+        {
+          id: "teamId",
+          header: t("team"),
+          enableColumnFilter: true,
+          enableSorting: false,
+          cell: () => null,
+          meta: {
+            filter: {
+              type: ColumnFilterType.MULTI_SELECT,
+            },
           },
-        },
-      }),
-      columnHelper.accessor((row) => !isSeparatorRow(row) && row.booking.user?.id, {
-        id: "userId",
-        header: t("member"),
-        enableColumnFilter: canReadOthersBookings,
-        enableSorting: false,
-        cell: () => null,
-        meta: {
-          filter: {
-            type: ColumnFilterType.MULTI_SELECT,
+        }
+      ),
+      columnHelper.accessor(
+        (row) => !isSeparatorRow(row) && row.booking.user?.id,
+        {
+          id: "userId",
+          header: t("member"),
+          enableColumnFilter: canReadOthersBookings,
+          enableSorting: false,
+          cell: () => null,
+          meta: {
+            filter: {
+              type: ColumnFilterType.MULTI_SELECT,
+            },
           },
-        },
-      }),
+        }
+      ),
       columnHelper.accessor((row) => row, {
         id: "attendeeName",
         header: t("attendee_name"),
@@ -141,12 +150,21 @@ export function useBookingListColumns({
               }}
               listingStatus={status}
               recurringInfo={recurringInfo}
-              {...(bookingsV3Enabled && { onClick: () => handleBookingClick(booking.uid) })}
+              {...(bookingsV3Enabled && {
+                onClick: () => handleBookingClick(booking.uid),
+              })}
               {...booking}
             />
           );
         },
       }),
     ];
-  }, [user, status, t, canReadOthersBookings, bookingsV3Enabled, handleBookingClick]);
+  }, [
+    user,
+    status,
+    t,
+    canReadOthersBookings,
+    bookingsV3Enabled,
+    handleBookingClick,
+  ]);
 }

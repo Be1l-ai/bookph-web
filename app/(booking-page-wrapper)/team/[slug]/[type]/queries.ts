@@ -134,7 +134,7 @@ export async function getCRMData(
 
   if (!teamMemberEmail || !crmOwnerRecordType || !crmAppSlug) {
     const { getTeamMemberEmailForResponseOrContactUsingUrlQuery } = await import(
-      "@calcom/features/ee/teams/lib/getTeamMemberEmailFromCrm"
+      "@bookph/core/features/ee/teams/lib/getTeamMemberEmailFromCrm"
     );
     const {
       email,

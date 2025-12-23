@@ -24,13 +24,16 @@ const querySchema = z.object({
 });
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const prisma = await import("@calcom/prisma").then((mod) => mod.default);
+  const prisma = await import("@bookph/core/prisma").then((mod) => mod.default);
   const featuresRepository = new FeaturesRepository(prisma);
-  const emailVerificationEnabled = await featuresRepository.checkIfFeatureIsEnabledGlobally(
-    "email-verification"
-  );
-  const signupDisabled = await featuresRepository.checkIfFeatureIsEnabledGlobally("disable-signup");
-  const onboardingV3Enabled = await featuresRepository.checkIfFeatureIsEnabledGlobally("onboarding-v3");
+  const emailVerificationEnabled =
+    await featuresRepository.checkIfFeatureIsEnabledGlobally(
+      "email-verification"
+    );
+  const signupDisabled =
+    await featuresRepository.checkIfFeatureIsEnabledGlobally("disable-signup");
+  const onboardingV3Enabled =
+    await featuresRepository.checkIfFeatureIsEnabledGlobally("onboarding-v3");
 
   const token = z.string().optional().parse(ctx.query.token);
   const redirectUrlData = z
@@ -42,7 +45,10 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     .optional()
     .safeParse(ctx.query.redirect);
 
-  const redirectUrl = redirectUrlData.success && redirectUrlData.data ? redirectUrlData.data : null;
+  const redirectUrl =
+    redirectUrlData.success && redirectUrlData.data
+      ? redirectUrlData.data
+      : null;
 
   const session = await getServerSession({
     req: ctx.req,
@@ -66,7 +72,10 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     onboardingV3Enabled,
   };
 
-  if ((process.env.NEXT_PUBLIC_DISABLE_SIGNUP === "true" && !token) || signupDisabled) {
+  if (
+    (process.env.NEXT_PUBLIC_DISABLE_SIGNUP === "true" && !token) ||
+    signupDisabled
+  ) {
     return {
       redirect: {
         permanent: false,
@@ -164,10 +173,13 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const isATeamInOrganization = tokenTeam?.parentId !== null;
   // Detect if the team is an org by either the metadata flag or if it has a parent team
   const isOrganization = tokenTeam.isOrganization;
-  const isOrganizationOrATeamInOrganization = isOrganization || isATeamInOrganization;
+  const isOrganizationOrATeamInOrganization =
+    isOrganization || isATeamInOrganization;
   // If we are dealing with an org, the slug may come from the team itself or its parent
   const orgSlug = isOrganizationOrATeamInOrganization
-    ? tokenTeam.metadata?.requestedSlug || tokenTeam.parent?.slug || tokenTeam.slug
+    ? tokenTeam.metadata?.requestedSlug ||
+      tokenTeam.parent?.slug ||
+      tokenTeam.slug
     : null;
 
   // Org context shouldn't check if a username is premium
@@ -179,7 +191,8 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   }
 
   const isValidEmail = checkValidEmail(verificationToken.identifier);
-  const isOrgInviteByLink = isOrganizationOrATeamInOrganization && !isValidEmail;
+  const isOrgInviteByLink =
+    isOrganizationOrATeamInOrganization && !isValidEmail;
   const parentOrgSettings = tokenTeam?.parent?.organizationSettings ?? null;
 
   return {
@@ -201,7 +214,9 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         : null,
       orgSlug,
       orgAutoAcceptEmail: isOrgInviteByLink
-        ? tokenTeam?.organizationSettings?.orgAutoAcceptEmail ?? parentOrgSettings?.orgAutoAcceptEmail ?? null
+        ? (tokenTeam?.organizationSettings?.orgAutoAcceptEmail ??
+          parentOrgSettings?.orgAutoAcceptEmail ??
+          null)
         : null,
     },
   };

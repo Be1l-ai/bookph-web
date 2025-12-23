@@ -12,8 +12,14 @@ import getFieldIdentifier from "@bookph/core/app-store/routing-forms/lib/getFiel
 import { findMatchingRoute } from "@bookph/core/app-store/routing-forms/lib/processRoute";
 import { substituteVariables } from "@bookph/core/app-store/routing-forms/lib/substituteVariables";
 import { getFieldResponseForJsonLogic } from "@bookph/core/app-store/routing-forms/lib/transformResponse";
-import type { NonRouterRoute, FormResponse } from "@bookph/core/app-store/routing-forms/types/types";
-import { sdkActionManager, useIsEmbed } from "@bookph/core/embeds/embed-core/embed-iframe";
+import type {
+  NonRouterRoute,
+  FormResponse,
+} from "@bookph/core/app-store/routing-forms/types/types";
+import {
+  sdkActionManager,
+  useIsEmbed,
+} from "@bookph/core/embeds/embed-core/embed-iframe";
 import { getUrlSearchParamsToForward } from "@bookph/core/features/routing-forms/lib/getUrlSearchParamsToForward";
 import useGetBrandingColours from "@bookph/core/lib/getBrandColours";
 import { useCompatSearchParams } from "@bookph/core/lib/hooks/useCompatSearchParams";
@@ -26,7 +32,7 @@ import classNames from "@bookph/ui/classNames";
 import { Button } from "@bookph/ui/components/button";
 import { showToast } from "@bookph/ui/components/toast";
 import { useCalcomTheme } from "@bookph/ui/styles";
-import type { getServerSideProps } from "@calcom/web/lib/apps/routing-forms/[...pages]/getServerSidePropsRoutingLink";
+import type { getServerSideProps } from "~/lib/apps/routing-forms/[...pages]/getServerSidePropsRoutingLink";
 
 type Props = inferSSRProps<typeof getServerSideProps>;
 const useBrandColors = ({
@@ -44,7 +50,8 @@ const useBrandColors = ({
 };
 
 function RoutingForm({ form, profile, ...restProps }: Props) {
-  const [customPageMessage, setCustomPageMessage] = useState<NonRouterRoute["action"]["value"]>("");
+  const [customPageMessage, setCustomPageMessage] =
+    useState<NonRouterRoute["action"]["value"]>("");
   const formFillerIdRef = useRef(uuidv4());
   const isEmbed = useIsEmbed(restProps.isEmbed);
   useTheme(profile.theme);
@@ -55,7 +62,8 @@ function RoutingForm({ form, profile, ...restProps }: Props) {
 
   const [response, setResponse] = usePrefilledResponse(form);
   const pageSearchParams = useCompatSearchParams();
-  const isBookingDryRun = pageSearchParams?.get("cal.isBookingDryRun") === "true";
+  const isBookingDryRun =
+    pageSearchParams?.get("cal.isBookingDryRun") === "true";
 
   // TODO: We might want to prevent spam from a single user by having same formFillerId across pageviews
   // But technically, a user can fill form multiple times due to any number of reasons and we currently can't differentiate b/w that.
@@ -95,73 +103,80 @@ function RoutingForm({ form, profile, ...restProps }: Props) {
     sdkActionManager?.fire("__routeChanged", {});
   }, [customPageMessage]);
 
-  const responseMutation = trpc.viewer.routingForms.public.response.useMutation({
-    onSuccess: async (data) => {
-      const {
-        teamMembersMatchingAttributeLogic,
-        formResponse,
-        queuedFormResponse,
-        attributeRoutingConfig,
-        crmContactOwnerEmail,
-        crmContactOwnerRecordType,
-        crmAppSlug,
-      } = data;
-      const chosenRouteWithFormResponse = chosenRouteWithFormResponseRef.current;
-      if (!chosenRouteWithFormResponse) {
-        return;
-      }
-      const fields = form.fields;
-      if (!fields) {
-        throw new Error("Routing Form fields must exist here");
-      }
-      const allURLSearchParams = getUrlSearchParamsToForward({
-        formResponse: chosenRouteWithFormResponse.response,
-        formResponseId: formResponse?.id ?? null,
-        queuedFormResponseId: queuedFormResponse?.id ?? null,
-        fields,
-        searchParams: new URLSearchParams(window.location.search),
-        teamMembersMatchingAttributeLogic,
-        attributeRoutingConfig: attributeRoutingConfig ?? null,
-        crmContactOwnerEmail,
-        crmContactOwnerRecordType,
-        crmAppSlug,
-      });
-      const chosenRoute = chosenRouteWithFormResponse.route;
-      const decidedAction = chosenRoute.action;
-      sdkActionManager?.fire("routed", {
-        actionType: decidedAction.type,
-        actionValue: decidedAction.value,
-      });
-      //TODO: Maybe take action after successful mutation
-      if (decidedAction.type === "customPageMessage") {
-        setCustomPageMessage(decidedAction.value);
-      } else if (decidedAction.type === "eventTypeRedirectUrl") {
-        const eventTypeUrlWithResolvedVariables = substituteVariables(decidedAction.value, response, fields);
-        router.push(
-          getAbsoluteEventTypeRedirectUrlWithEmbedSupport({
-            form,
-            eventTypeRedirectUrl: eventTypeUrlWithResolvedVariables,
-            allURLSearchParams,
-            isEmbed: !!isEmbed,
-          })
-        );
-      } else if (decidedAction.type === "externalRedirectUrl") {
-        navigateInTopWindow(`${decidedAction.value}?${allURLSearchParams}`);
-      }
-      // We don't want to show this message as it doesn't look good in Embed.
-      // showToast("Form submitted successfully! Redirecting now ...", "success");
-    },
-    onError: (e) => {
-      if (e?.message) {
-        return void showToast(e?.message, "error");
-      }
-      if (e?.data?.code === "CONFLICT") {
-        return void showToast("Form already submitted", "error");
-      }
-      // We don't want to show this error as it doesn't look good in Embed.
-      // showToast("Something went wrong", "error");
-    },
-  });
+  const responseMutation = trpc.viewer.routingForms.public.response.useMutation(
+    {
+      onSuccess: async (data) => {
+        const {
+          teamMembersMatchingAttributeLogic,
+          formResponse,
+          queuedFormResponse,
+          attributeRoutingConfig,
+          crmContactOwnerEmail,
+          crmContactOwnerRecordType,
+          crmAppSlug,
+        } = data;
+        const chosenRouteWithFormResponse =
+          chosenRouteWithFormResponseRef.current;
+        if (!chosenRouteWithFormResponse) {
+          return;
+        }
+        const fields = form.fields;
+        if (!fields) {
+          throw new Error("Routing Form fields must exist here");
+        }
+        const allURLSearchParams = getUrlSearchParamsToForward({
+          formResponse: chosenRouteWithFormResponse.response,
+          formResponseId: formResponse?.id ?? null,
+          queuedFormResponseId: queuedFormResponse?.id ?? null,
+          fields,
+          searchParams: new URLSearchParams(window.location.search),
+          teamMembersMatchingAttributeLogic,
+          attributeRoutingConfig: attributeRoutingConfig ?? null,
+          crmContactOwnerEmail,
+          crmContactOwnerRecordType,
+          crmAppSlug,
+        });
+        const chosenRoute = chosenRouteWithFormResponse.route;
+        const decidedAction = chosenRoute.action;
+        sdkActionManager?.fire("routed", {
+          actionType: decidedAction.type,
+          actionValue: decidedAction.value,
+        });
+        //TODO: Maybe take action after successful mutation
+        if (decidedAction.type === "customPageMessage") {
+          setCustomPageMessage(decidedAction.value);
+        } else if (decidedAction.type === "eventTypeRedirectUrl") {
+          const eventTypeUrlWithResolvedVariables = substituteVariables(
+            decidedAction.value,
+            response,
+            fields
+          );
+          router.push(
+            getAbsoluteEventTypeRedirectUrlWithEmbedSupport({
+              form,
+              eventTypeRedirectUrl: eventTypeUrlWithResolvedVariables,
+              allURLSearchParams,
+              isEmbed: !!isEmbed,
+            })
+          );
+        } else if (decidedAction.type === "externalRedirectUrl") {
+          navigateInTopWindow(`${decidedAction.value}?${allURLSearchParams}`);
+        }
+        // We don't want to show this message as it doesn't look good in Embed.
+        // showToast("Form submitted successfully! Redirecting now ...", "success");
+      },
+      onError: (e) => {
+        if (e?.message) {
+          return void showToast(e?.message, "error");
+        }
+        if (e?.data?.code === "CONFLICT") {
+          return void showToast("Form already submitted", "error");
+        }
+        // We don't want to show this error as it doesn't look good in Embed.
+        // showToast("Something went wrong", "error");
+      },
+    }
+  );
 
   const handleOnSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -175,7 +190,12 @@ function RoutingForm({ form, profile, ...restProps }: Props) {
       <div>
         {!customPageMessage ? (
           <>
-            <div className={classNames("mx-auto my-0 max-w-3xl", isEmbed ? "" : "md:my-24")}>
+            <div
+              className={classNames(
+                "mx-auto my-0 max-w-3xl",
+                isEmbed ? "" : "md:my-24"
+              )}
+            >
               <div className="w-full max-w-4xl ltr:mr-2 rtl:ml-2">
                 <div className="main border-booker md:border-booker-width dark:bg-cal-muted bg-default mx-0 rounded-md p-4 py-6 sm:-mx-4 sm:px-8 ">
                   <Toaster position="bottom-right" />
@@ -186,16 +206,23 @@ function RoutingForm({ form, profile, ...restProps }: Props) {
                         {form.name}
                       </h1>
                       {form.description ? (
-                        <p className="min-h-10 text-subtle text-sm ltr:mr-4 rtl:ml-4">{form.description}</p>
+                        <p className="min-h-10 text-subtle text-sm ltr:mr-4 rtl:ml-4">
+                          {form.description}
+                        </p>
                       ) : null}
                     </div>
-                    <FormInputFields form={form} response={response} setResponse={setResponse} />
+                    <FormInputFields
+                      form={form}
+                      response={response}
+                      setResponse={setResponse}
+                    />
                     <div className="mt-4 flex justify-end space-x-2 rtl:space-x-reverse">
                       <Button
                         className="dark:bg-darkmodebrand dark:text-darkmodebrandcontrast dark:hover:border-darkmodebrandcontrast dark:border-transparent"
                         loading={responseMutation.isPending}
                         type="submit"
-                        color="primary">
+                        color="primary"
+                      >
                         {t("continue")}
                       </Button>
                     </div>
@@ -218,7 +245,9 @@ function RoutingForm({ form, profile, ...restProps }: Props) {
   );
 }
 
-export default function RoutingLink(props: inferSSRProps<typeof getServerSideProps>) {
+export default function RoutingLink(
+  props: inferSSRProps<typeof getServerSideProps>
+) {
   return <RoutingForm {...props} />;
 }
 
@@ -228,9 +257,11 @@ const usePrefilledResponse = (form: Props["form"]) => {
 
   // Prefill the form from query params
   form.fields?.forEach((field) => {
-    const valuesFromQuery = searchParams?.getAll(getFieldIdentifier(field)).filter(Boolean) ?? [];
+    const valuesFromQuery =
+      searchParams?.getAll(getFieldIdentifier(field)).filter(Boolean) ?? [];
     // We only want to keep arrays if the field is a multi-select
-    const value = valuesFromQuery.length > 1 ? valuesFromQuery : valuesFromQuery[0];
+    const value =
+      valuesFromQuery.length > 1 ? valuesFromQuery : valuesFromQuery[0];
 
     prefillResponse[field.id] = {
       value: getFieldResponseForJsonLogic({ field, value }),

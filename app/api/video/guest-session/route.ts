@@ -12,7 +12,7 @@ import { BookingRepository } from "@bookph/core/features/bookings/repositories/B
 import { getCalVideoReference } from "@bookph/core/features/get-cal-video-reference";
 import { VideoCallGuestRepository } from "@bookph/core/features/video-call-guest/repositories/VideoCallGuestRepository";
 import prisma from "@bookph/core/prisma";
-import { validateCsrfToken } from "@calcom/web/lib/validateCsrfToken";
+import { validateCsrfToken } from "~/lib/validateCsrfToken";
 
 const videoCallGuestWithCsrfSchema = z.object({
   bookingUid: z.string(),
@@ -26,7 +26,10 @@ async function handler(req: NextRequest) {
   try {
     appDirRequestBody = await req.json();
   } catch {
-    return NextResponse.json({ success: false, message: "Invalid JSON" }, { status: 400 });
+    return NextResponse.json(
+      { success: false, message: "Invalid JSON" },
+      { status: 400 }
+    );
   }
 
   const guestData = videoCallGuestWithCsrfSchema.parse(appDirRequestBody);
@@ -37,20 +40,29 @@ async function handler(req: NextRequest) {
   }
 
   const bookingRepo = new BookingRepository(prisma);
-  const booking = await bookingRepo.findBookingIncludeCalVideoSettingsAndReferences({
-    bookingUid: guestData.bookingUid,
-  });
+  const booking =
+    await bookingRepo.findBookingIncludeCalVideoSettingsAndReferences({
+      bookingUid: guestData.bookingUid,
+    });
 
   if (!booking) {
     return NextResponse.json({ error: "Booking not found" }, { status: 404 });
   }
 
   const { hosts, guests } = getHostsAndGuests(booking);
-  const isHost = hosts.some((host) => host.email.toLowerCase() === guestData.email.trim().toLowerCase());
-  const isGuest = guests.some((guest) => guest.email.toLowerCase() === guestData.email.trim().toLowerCase());
+  const isHost = hosts.some(
+    (host) => host.email.toLowerCase() === guestData.email.trim().toLowerCase()
+  );
+  const isGuest = guests.some(
+    (guest) =>
+      guest.email.toLowerCase() === guestData.email.trim().toLowerCase()
+  );
 
   if (isHost) {
-    return NextResponse.json({ error: "hosts_must_use_login" }, { status: 403 });
+    return NextResponse.json(
+      { error: "hosts_must_use_login" },
+      { status: 403 }
+    );
   } else if (!isGuest) {
     return NextResponse.json({ error: "invalid_guest_email" }, { status: 403 });
   }
@@ -65,12 +77,19 @@ async function handler(req: NextRequest) {
   const videoReference = getCalVideoReference(booking.references);
 
   if (!videoReference) {
-    return NextResponse.json({ error: "Video reference not found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "Video reference not found" },
+      { status: 404 }
+    );
   }
 
   const endTime = new Date(booking.endTime);
-  const fourteenDaysAfter = new Date(endTime.getTime() + 14 * 24 * 60 * 60 * 1000);
-  const epochTimeFourteenDaysAfter = Math.floor(fourteenDaysAfter.getTime() / 1000);
+  const fourteenDaysAfter = new Date(
+    endTime.getTime() + 14 * 24 * 60 * 60 * 1000
+  );
+  const epochTimeFourteenDaysAfter = Math.floor(
+    fourteenDaysAfter.getTime() / 1000
+  );
 
   const videoReferencePassword = await updateMeetingTokenIfExpired({
     bookingReferenceId: videoReference.id,
@@ -79,10 +98,11 @@ async function handler(req: NextRequest) {
     exp: epochTimeFourteenDaysAfter,
   });
 
-  const guestMeetingPassword = await generateGuestMeetingTokenFromOwnerMeetingToken({
-    meetingToken: videoReferencePassword,
-    userId: guestSession.id,
-  });
+  const guestMeetingPassword =
+    await generateGuestMeetingTokenFromOwnerMeetingToken({
+      meetingToken: videoReferencePassword,
+      userId: guestSession.id,
+    });
 
   return NextResponse.json({
     guestSessionId: guestSession.id,

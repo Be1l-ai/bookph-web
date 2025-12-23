@@ -6,7 +6,7 @@ import type { IntervalLimit } from "@bookph/core/lib/intervalLimits/intervalLimi
 import { validateIntervalLimitOrder } from "@bookph/core/lib/intervalLimits/validateIntervalLimitOrder";
 
 const mockCountBookingsByEventTypeAndDateRange = vi.fn();
-vi.mock("@calcom/features/bookings/repositories/BookingRepository", () => ({
+vi.mock("@bookph/core/features/bookings/repositories/BookingRepository", () => ({
   BookingRepository: vi.fn().mockImplementation(() => ({
     countBookingsByEventTypeAndDateRange: mockCountBookingsByEventTypeAndDateRange,
   })),

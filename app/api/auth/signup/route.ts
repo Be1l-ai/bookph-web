@@ -2,8 +2,8 @@ import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
 import { parseRequestData } from "app/api/parseRequestData";
 import { NextResponse, type NextRequest } from "next/server";
 
-import calcomSignupHandler from "@calcom/feature-auth/signup/handlers/calcomHandler";
-import selfHostedSignupHandler from "@calcom/feature-auth/signup/handlers/selfHostedHandler";
+import calcomSignupHandler from "@bookph/core/features/auth/signup/handlers/calcomHandler";
+import selfHostedSignupHandler from "@bookph/core/features/auth/signup/handlers/selfHostedHandler";
 import { FeaturesRepository } from "@bookph/core/features/flags/features.repository";
 import { checkRateLimitAndThrowError } from "@bookph/core/lib/checkRateLimitAndThrowError";
 import { IS_PREMIUM_USERNAME_ENABLED } from "@bookph/core/lib/constants";
@@ -26,7 +26,8 @@ async function ensureSignupIsEnabled(body: Record<string, string>) {
   if (token) return;
 
   const featuresRepository = new FeaturesRepository(prisma);
-  const signupDisabled = await featuresRepository.checkIfFeatureIsEnabledGlobally("disable-signup");
+  const signupDisabled =
+    await featuresRepository.checkIfFeatureIsEnabledGlobally("disable-signup");
 
   if (process.env.NEXT_PUBLIC_DISABLE_SIGNUP === "true" || signupDisabled) {
     throw new HttpError({
@@ -68,10 +69,16 @@ async function handler(req: NextRequest) {
     return await selfHostedSignupHandler(body);
   } catch (e) {
     if (e instanceof HttpError) {
-      return NextResponse.json({ message: e.message }, { status: e.statusCode });
+      return NextResponse.json(
+        { message: e.message },
+        { status: e.statusCode }
+      );
     }
     logger.error(e);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 

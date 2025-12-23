@@ -47,7 +47,7 @@ import { getMockPaymentService } from "./MockPaymentService";
 import type { getMockRequestDataForBooking } from "./getMockRequestDataForBooking";
 
 type NonNullableVideoApiAdapter = NonNullable<VideoApiAdapter>;
-vi.mock("@calcom/app-store/calendar.services.generated", () => ({
+vi.mock("@bookph/core/app-store/calendar.services.generated", () => ({
   CalendarServiceMap: {
     googlecalendar: Promise.resolve({ default: vi.fn() }),
     office365calendar: Promise.resolve({ default: vi.fn() }),
@@ -58,7 +58,7 @@ vi.mock("@calcom/app-store/calendar.services.generated", () => ({
 
 const mockVideoAdapterRegistry: Record<string, unknown> = {};
 
-vi.mock("@calcom/app-store/video.adapters.generated", () => ({
+vi.mock("@bookph/core/app-store/video.adapters.generated", () => ({
   VideoApiAdapterMap: new Proxy(
     {},
     {
@@ -73,12 +73,12 @@ vi.mock("@calcom/app-store/video.adapters.generated", () => ({
 }));
 
 // We don't need to test it. Also, it causes Formbricks error when imported
-vi.mock("@calcom/lib/raqb/findTeamMembersMatchingAttributeLogic", () => ({
+vi.mock("@bookph/core/lib/raqb/findTeamMembersMatchingAttributeLogic", () => ({
   default: {},
 }));
 
-vi.mock("@calcom/lib/crypto", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@calcom/lib/crypto")>();
+vi.mock("@bookph/core/lib/crypto", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@bookph/core/lib/crypto")>();
   return {
     ...actual,
     symmetricEncrypt: vi.fn((serviceAccountKey) => serviceAccountKey),
@@ -1826,7 +1826,7 @@ export async function mockCalendar(
   const getAvailabilityCalls: GetAvailabilityMethodMockCall[] = [];
   const app = appStoreMetadata[metadataLookupKey as keyof typeof appStoreMetadata];
 
-  const { CalendarServiceMap } = await import("@calcom/app-store/calendar.services.generated");
+  const { CalendarServiceMap } = await import("@bookph/core/app-store/calendar.services.generated");
   const calendarServiceKey = appStoreLookupKey as keyof typeof CalendarServiceMap;
 
   const calendarServicePromise = CalendarServiceMap[calendarServiceKey];
@@ -2209,8 +2209,8 @@ export function mockCrmApp(
   const eventsCreated: boolean[] = [];
 
   // Mock the CrmServiceMap directly instead of using the old app-store index approach
-  vi.doMock("@calcom/app-store/crm.apps.generated", async (importOriginal) => {
-    const original = await importOriginal<typeof import("@calcom/app-store/crm.apps.generated")>();
+  vi.doMock("@bookph/core/app-store/crm.apps.generated", async (importOriginal) => {
+    const original = await importOriginal<typeof import("@bookph/core/app-store/crm.apps.generated")>();
 
     class MockCrmService {
       constructor() {

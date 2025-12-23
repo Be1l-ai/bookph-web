@@ -6,7 +6,10 @@ import { Suspense } from "react";
 import { Loader } from "@bookph/ui/components/skeleton";
 
 const TroubleshooterClientOnly = dynamic(
-  () => import("@calcom/features/troubleshooter/Troubleshooter").then((mod) => mod.Troubleshooter),
+  () =>
+    import("@bookph/core/features/troubleshooter/Troubleshooter").then(
+      (mod) => mod.Troubleshooter
+    ),
   {
     ssr: false,
   }
@@ -20,7 +23,8 @@ function TroubleshooterPage() {
           <div className="flex h-full w-full items-center justify-center">
             <Loader />
           </div>
-        }>
+        }
+      >
         <TroubleshooterClientOnly month={null} />
       </Suspense>
     </>

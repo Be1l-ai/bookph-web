@@ -18,9 +18,11 @@ const {
 adjustEnvVariables();
 
 if (!process.env.NEXTAUTH_SECRET) throw new Error("Please set NEXTAUTH_SECRET");
-if (!process.env.CALENDSO_ENCRYPTION_KEY) throw new Error("Please set CALENDSO_ENCRYPTION_KEY");
+if (!process.env.CALENDSO_ENCRYPTION_KEY)
+  throw new Error("Please set CALENDSO_ENCRYPTION_KEY");
 const isOrganizationsEnabled =
-  process.env.ORGANIZATIONS_ENABLED === "1" || process.env.ORGANIZATIONS_ENABLED === "true";
+  process.env.ORGANIZATIONS_ENABLED === "1" ||
+  process.env.ORGANIZATIONS_ENABLED === "true";
 // To be able to use the version in the app without having to import package.json
 process.env.NEXT_PUBLIC_CALCOM_VERSION = version;
 
@@ -37,7 +39,8 @@ if (!process.env.NEXT_PUBLIC_WEBSITE_URL) {
 }
 if (
   process.env.CSP_POLICY === "strict" &&
-  (process.env.CALCOM_ENV === "production" || process.env.NODE_ENV === "production")
+  (process.env.CALCOM_ENV === "production" ||
+    process.env.NODE_ENV === "production")
 ) {
   throw new Error(
     "Strict CSP policy(for style-src) is not yet supported in production. You can experiment with it in Dev Mode"
@@ -63,9 +66,13 @@ const getHttpsUrl = (url) => {
 };
 
 if (process.argv.includes("--experimental-https")) {
-  process.env.NEXT_PUBLIC_WEBAPP_URL = getHttpsUrl(process.env.NEXT_PUBLIC_WEBAPP_URL);
+  process.env.NEXT_PUBLIC_WEBAPP_URL = getHttpsUrl(
+    process.env.NEXT_PUBLIC_WEBAPP_URL
+  );
   process.env.NEXTAUTH_URL = getHttpsUrl(process.env.NEXTAUTH_URL);
-  process.env.NEXT_PUBLIC_EMBED_LIB_URL = getHttpsUrl(process.env.NEXT_PUBLIC_EMBED_LIB_URL);
+  process.env.NEXT_PUBLIC_EMBED_LIB_URL = getHttpsUrl(
+    process.env.NEXT_PUBLIC_EMBED_LIB_URL
+  );
 }
 
 const validJson = (jsonString) => {
@@ -80,7 +87,10 @@ const validJson = (jsonString) => {
   return false;
 };
 
-if (process.env.GOOGLE_API_CREDENTIALS && !validJson(process.env.GOOGLE_API_CREDENTIALS)) {
+if (
+  process.env.GOOGLE_API_CREDENTIALS &&
+  !validJson(process.env.GOOGLE_API_CREDENTIALS)
+) {
   console.warn(
     "\x1b[33mwarn",
     "\x1b[0m",
@@ -107,7 +117,6 @@ const informAboutDuplicateTranslations = () => {
     }
   }
 };
-
 
 const plugins = [];
 if (process.env.ANALYZE === "true") {
@@ -206,7 +215,7 @@ const nextConfig = (phase) => {
     ],
     experimental: {
       // externalize server-side node_modules with size > 1mb, to improve dev mode performance/RAM usage
-      optimizePackageImports: ["@calcom/ui"],
+      optimizePackageImports: ["@bookph/ui"],
       webpackMemoryOptimizations: true,
       webpackBuildWorker: true,
     },
@@ -220,27 +229,21 @@ const nextConfig = (phase) => {
       ignoreDuringBuilds: !!process.env.CI,
     },
     transpilePackages: [
-      "@calcom/app-store",
-      "@calcom/dayjs",
-      "@calcom/emails",
-      "@calcom/embed-core",
-      "@calcom/features",
-      "@calcom/lib",
-      "@calcom/prisma",
-      "@calcom/trpc",
+      "@bookph/core",
+      "@bookph/ui",
     ],
     modularizeImports: {
-      "@calcom/features/insights/components": {
-        transform: "@calcom/features/insights/components/{{member}}",
+      "@bookph/core/features/insights/components": {
+        transform: "@bookph/core/features/insights/components/{{member}}",
         skipDefaultConversion: true,
         preventFullImport: true,
       },
       lodash: {
         transform: "lodash/{{member}}",
       },
-    },
-    images: {
-      unoptimized: true,
+    },"bookph/core/features/insights/components": {
+        transform: "@bookph/core",
+        unoptimized: true,
     },
     webpack: (config, { webpack, buildId, isServer, dev }) => {
       if (!dev) {
@@ -265,7 +268,11 @@ const nextConfig = (phase) => {
         config.externals.push("formidable");
       }
 
-      config.plugins.push(new webpack.DefinePlugin({ "process.env.BUILD_ID": JSON.stringify(buildId) }));
+      config.plugins.push(
+        new webpack.DefinePlugin({
+          "process.env.BUILD_ID": JSON.stringify(buildId),
+        })
+      );
 
       config.resolve.fallback = {
         ...config.resolve.fallback, // if you miss it, all the other options in fallback, specified
@@ -573,7 +580,8 @@ const nextConfig = (phase) => {
         },
         {
           source: "/auth/new",
-          destination: process.env.NEXT_PUBLIC_WEBAPP_URL || "https://app.cal.com",
+          destination:
+            process.env.NEXT_PUBLIC_WEBAPP_URL || "https://app.cal.com",
           permanent: true,
         },
         {
@@ -638,7 +646,8 @@ const nextConfig = (phase) => {
         },
         {
           source: "/booking/direct/:action/:email/:bookingUid/:oldToken",
-          destination: "/api/link?action=:action&email=:email&bookingUid=:bookingUid&oldToken=:oldToken",
+          destination:
+            "/api/link?action=:action&email=:email&bookingUid=:bookingUid&oldToken=:oldToken",
           permanent: true,
         },
         {
@@ -738,10 +747,13 @@ function adjustEnvVariables() {
 
     if (!process.env.ORGANIZATIONS_ENABLED) {
       // This is basically a consent to add rewrites related to organizations. So, if single org slug mode is there, we have the consent already.
-      console.log("Auto-enabling ORGANIZATIONS_ENABLED because SINGLE_ORG_SLUG is set");
+      console.log(
+        "Auto-enabling ORGANIZATIONS_ENABLED because SINGLE_ORG_SLUG is set"
+      );
       process.env.ORGANIZATIONS_ENABLED = "1";
     }
   }
 }
 
-module.exports = (phase) => plugins.reduce((acc, next) => next(acc), nextConfig(phase));
+module.exports = (phase) =>
+  plugins.reduce((acc, next) => next(acc), nextConfig(phase));

@@ -6,11 +6,11 @@ import { verifyVideoToken } from "@bookph/core/lib/videoTokens";
 
 import { GET } from "../route";
 
-vi.mock("@calcom/features/conferencing/lib/videoClient", () => ({
+vi.mock("@bookph/core/features/conferencing/lib/videoClient", () => ({
   getDownloadLinkOfCalVideoByRecordingId: vi.fn(),
 }));
 
-vi.mock("@calcom/lib/videoTokens", () => ({
+vi.mock("@bookph/core/lib/videoTokens", () => ({
   verifyVideoToken: vi.fn(),
 }));
 

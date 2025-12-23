@@ -51,11 +51,11 @@ vi.mock("next/server", () => ({
 }));
 
 // Mock dependencies
-vi.mock("@calcom/lib/pkce", () => ({
+vi.mock("@bookph/core/lib/pkce", () => ({
   verifyCodeChallenge: vi.fn(),
 }));
 
-vi.mock("@calcom/trpc/server/routers/viewer/oAuth/addClient.handler", () => ({
+vi.mock("@bookph/core/trpc/server/routers/viewer/oAuth/addClient.handler", () => ({
   generateSecret: vi.fn(),
 }));
 
@@ -65,7 +65,7 @@ vi.mock("jsonwebtoken", () => ({
   },
 }));
 
-vi.mock("@calcom/prisma", () => ({
+vi.mock("@bookph/core/prisma", () => ({
   default: prismaMock,
 }));
 

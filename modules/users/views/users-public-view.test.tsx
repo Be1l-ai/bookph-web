@@ -6,8 +6,8 @@ import { useRouterQuery } from "@bookph/core/lib/hooks/useRouterQuery";
 
 import UserPage from "./users-public-view";
 
-vi.mock("@calcom/lib/constants", async () => {
-  return await vi.importActual("@calcom/lib/constants");
+vi.mock("@bookph/core/lib/constants", async () => {
+  return await vi.importActual("@bookph/core/lib/constants");
 });
 
 function mockedUserPageComponentProps(props: Partial<React.ComponentProps<typeof UserPage>>) {

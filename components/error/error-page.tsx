@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import "@calcom/embed-core/src/embed-iframe";
+import "@bookph/core/embed-core/src/embed-iframe";
 import { HttpError } from "@bookph/core/lib/http-error";
 import { Button } from "@bookph/ui/components/button";
 
