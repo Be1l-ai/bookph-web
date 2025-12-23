@@ -32,21 +32,28 @@ import { Tooltip } from "@bookph/ui/components/tooltip";
 import type {
   SetNewFormDialogState,
   NewFormDialogState,
-} from "@calcom/web/components/apps/routing-forms/FormActions";
+} from "~/components/apps/routing-forms/FormActions";
 import {
   FormAction,
   FormActionsDropdown,
   FormActionsProvider,
-} from "@calcom/web/components/apps/routing-forms/FormActions";
+} from "~/components/apps/routing-forms/FormActions";
 
-function NewFormButton({ setNewFormDialogState }: { setNewFormDialogState: SetNewFormDialogState }) {
+function NewFormButton({
+  setNewFormDialogState,
+}: {
+  setNewFormDialogState: SetNewFormDialogState;
+}) {
   const { t } = useLocale();
   return (
     <CreateButtonWithTeamsList
       subtitle={t("create_routing_form_on").toUpperCase()}
       data-testid="new-routing-form"
       createFunction={(teamId) => {
-        setNewFormDialogState({ action: "new", target: teamId ? String(teamId) : "" });
+        setNewFormDialogState({
+          action: "new",
+          target: teamId ? String(teamId) : "",
+        });
         // BookPH: Telemetry disabled - posthog.capture("new_routing_form_button_clicked", { teamId });
       }}
       withPermission={{
@@ -65,16 +72,17 @@ export default function RoutingForms({ appUrl }: { appUrl: string }) {
   const utils = trpc.useUtils();
   const [parent] = useAutoAnimate<HTMLUListElement>();
 
-  const mutation = trpc.viewer.loggedInViewerRouter.routingFormOrder.useMutation({
-    onError: async (err) => {
-      console.error(err.message);
-      await utils.viewer.appRoutingForms.forms.cancel();
-      await utils.viewer.appRoutingForms.invalidate();
-    },
-    onSettled: () => {
-      utils.viewer.appRoutingForms.invalidate();
-    },
-  });
+  const mutation =
+    trpc.viewer.loggedInViewerRouter.routingFormOrder.useMutation({
+      onError: async (err) => {
+        console.error(err.message);
+        await utils.viewer.appRoutingForms.forms.cancel();
+        await utils.viewer.appRoutingForms.invalidate();
+      },
+      onSettled: () => {
+        utils.viewer.appRoutingForms.invalidate();
+      },
+    });
 
   useEffect(() => {
     hookForm.reset({});
@@ -86,7 +94,8 @@ export default function RoutingForms({ appUrl }: { appUrl: string }) {
     filters,
   });
 
-  const [newFormDialogState, setNewFormDialogState] = useState<NewFormDialogState>(null);
+  const [newFormDialogState, setNewFormDialogState] =
+    useState<NewFormDialogState>(null);
 
   const forms = queryRes.data?.filtered;
   const features = [
@@ -154,7 +163,8 @@ export default function RoutingForms({ appUrl }: { appUrl: string }) {
             <NewFormButton setNewFormDialogState={setNewFormDialogState} />
           ) : null
         }
-        subtitle={t("routing_forms_description")}>
+        subtitle={t("routing_forms_description")}
+      >
         <UpgradeTip
           plan="team"
           title={t("teams_plan_required")}
@@ -165,19 +175,28 @@ export default function RoutingForms({ appUrl }: { appUrl: string }) {
           buttons={
             <div className="stack-y-2 rtl:space-x-reverse sm:space-x-2">
               <ButtonGroup>
-                <Button color="primary" href={`${WEBAPP_URL}/settings/teams/new`}>
+                <Button
+                  color="primary"
+                  href={`${WEBAPP_URL}/settings/teams/new`}
+                >
                   {t("upgrade")}
                 </Button>
-                <Button color="minimal" href="https://go.cal.com/teams-video" target="_blank">
+                <Button
+                  color="minimal"
+                  href="https://go.cal.com/teams-video"
+                  target="_blank"
+                >
                   {t("learn_more")}
                 </Button>
               </ButtonGroup>
             </div>
-          }>
+          }
+        >
           <FormActionsProvider
             appUrl={appUrl}
             newFormDialogState={newFormDialogState}
-            setNewFormDialogState={setNewFormDialogState}>
+            setNewFormDialogState={setNewFormDialogState}
+          >
             <div className="mb-10 w-full">
               <div className="mb-2 flex">
                 <TeamsFilter />
@@ -189,7 +208,11 @@ export default function RoutingForms({ appUrl }: { appUrl: string }) {
                     Icon="git-merge"
                     headline={t("create_your_first_form")}
                     description={t("create_your_first_form_description")}
-                    buttonRaw={<NewFormButton setNewFormDialogState={setNewFormDialogState} />}
+                    buttonRaw={
+                      <NewFormButton
+                        setNewFormDialogState={setNewFormDialogState}
+                      />
+                    }
                   />
                 }
                 noResultsScreen={
@@ -199,7 +222,8 @@ export default function RoutingForms({ appUrl }: { appUrl: string }) {
                     description={t("change_filter_common")}
                   />
                 }
-                SkeletonLoader={SkeletonLoaderTeamList}>
+                SkeletonLoader={SkeletonLoaderTeamList}
+              >
                 <div className="bg-default mb-16 overflow-hidden">
                   <List data-testid="routing-forms-list" ref={parent}>
                     {forms?.map(({ form, readOnly, hasError }, index) => {
@@ -213,20 +237,29 @@ export default function RoutingForms({ appUrl }: { appUrl: string }) {
                       const description = form.description || "";
                       form.routes = form.routes || [];
                       const fields = form.fields || [];
-                      const userRoutes = form.routes.filter((route) => !isFallbackRoute(route));
+                      const userRoutes = form.routes.filter(
+                        (route) => !isFallbackRoute(route)
+                      );
                       const firstItem = forms[0].form;
                       const lastItem = forms[forms.length - 1].form;
 
                       return (
                         <div
                           className="group flex w-full max-w-full items-center justify-between overflow-hidden"
-                          key={form.id}>
+                          key={form.id}
+                        >
                           {!(firstItem && firstItem.id === form.id) && (
-                            <ArrowButton onClick={() => moveRoutingForm(index, -1)} arrowDirection="up" />
+                            <ArrowButton
+                              onClick={() => moveRoutingForm(index, -1)}
+                              arrowDirection="up"
+                            />
                           )}
 
                           {!(lastItem && lastItem.id === form.id) && (
-                            <ArrowButton onClick={() => moveRoutingForm(index, 1)} arrowDirection="down" />
+                            <ArrowButton
+                              onClick={() => moveRoutingForm(index, 1)}
+                              arrowDirection="down"
+                            />
                           )}
                           <ListLinkItem
                             href={`${appUrl}/form-edit/${form.id}`}
@@ -238,7 +271,10 @@ export default function RoutingForms({ appUrl }: { appUrl: string }) {
                               <>
                                 {form.team?.name && (
                                   <div className="border-subtle border-r-2">
-                                    <Badge className="ltr:mr-2 rtl:ml-2" variant="gray">
+                                    <Badge
+                                      className="ltr:mr-2 rtl:ml-2"
+                                      variant="gray"
+                                    >
                                       {form.team.name}
                                     </Badge>
                                   </div>
@@ -282,14 +318,16 @@ export default function RoutingForms({ appUrl }: { appUrl: string }) {
                                       routingForm={form}
                                       color="minimal"
                                       className="flex!"
-                                      StartIcon="pencil">
+                                      StartIcon="pencil"
+                                    >
                                       {t("edit")}
                                     </FormAction>
                                     <FormAction
                                       action="download"
                                       routingForm={form}
                                       color="minimal"
-                                      StartIcon="download">
+                                      StartIcon="download"
+                                    >
                                       {t("download_responses")}
                                     </FormAction>
                                     <FormAction
@@ -297,7 +335,8 @@ export default function RoutingForms({ appUrl }: { appUrl: string }) {
                                       routingForm={form}
                                       color="minimal"
                                       className="w-full"
-                                      StartIcon="copy">
+                                      StartIcon="copy"
+                                    >
                                       {t("duplicate")}
                                     </FormAction>
                                     <FormAction
@@ -305,23 +344,29 @@ export default function RoutingForms({ appUrl }: { appUrl: string }) {
                                       routingForm={form}
                                       color="destructive"
                                       className="w-full"
-                                      StartIcon="trash">
+                                      StartIcon="trash"
+                                    >
                                       {t("delete")}
                                     </FormAction>
                                   </FormActionsDropdown>
                                 </ButtonGroup>
                               </>
-                            }>
+                            }
+                          >
                             <div className="flex flex-wrap gap-1">
                               <Badge variant="gray" startIcon="menu">
-                                {fields.length} {fields.length === 1 ? "field" : "fields"}
+                                {fields.length}{" "}
+                                {fields.length === 1 ? "field" : "fields"}
                               </Badge>
                               <Badge variant="gray" startIcon="git-merge">
-                                {userRoutes.length} {userRoutes.length === 1 ? "route" : "routes"}
+                                {userRoutes.length}{" "}
+                                {userRoutes.length === 1 ? "route" : "routes"}
                               </Badge>
                               <Badge variant="gray" startIcon="message-circle">
                                 {form._count.responses}{" "}
-                                {form._count.responses === 1 ? "response" : "responses"}
+                                {form._count.responses === 1
+                                  ? "response"
+                                  : "responses"}
                               </Badge>
                             </div>
                           </ListLinkItem>

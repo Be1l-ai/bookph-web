@@ -8,15 +8,15 @@ import { RoutingFormResponseRepository } from "@bookph/core/lib/server/repositor
 
 import { queuedResponseHandler } from "../route";
 
-vi.mock("@calcom/lib/server/repository/formResponse");
+vi.mock("@bookph/core/lib/server/repository/formResponse");
 
 const mockRoutingFormResponseRepository = {
   getQueuedFormResponseFromId: vi.fn(),
   recordFormResponse: vi.fn(),
 };
-vi.mock("@calcom/app-store/routing-forms/lib/getSerializableForm");
-vi.mock("@calcom/app-store/routing-forms/lib/getResponseToStore");
-vi.mock("@calcom/app-store/routing-forms/lib/formSubmissionUtils");
+vi.mock("@bookph/core/app-store/routing-forms/lib/getSerializableForm");
+vi.mock("@bookph/core/app-store/routing-forms/lib/getResponseToStore");
+vi.mock("@bookph/core/app-store/routing-forms/lib/formSubmissionUtils");
 
 const mockQueuedFormResponse = {
   id: "1",

@@ -7,7 +7,7 @@ import type { getEventLocationValue } from "@bookph/core/app-store/locations";
 import { getSuccessPageLocationMessage, guessEventLocationType } from "@bookph/core/app-store/locations";
 import dayjs from "@bookph/core/dayjs";
 // TODO: Use browser locale, implement Intl in Dayjs maybe?
-import "@calcom/dayjs/locales";
+import "@bookph/core/dayjs/locales";
 import { formatTime } from "@bookph/core/lib/dayjs";
 import { useCopy } from "@bookph/core/lib/hooks/useCopy";
 import { useLocale } from "@bookph/core/lib/hooks/useLocale";

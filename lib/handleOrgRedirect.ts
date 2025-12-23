@@ -35,7 +35,7 @@ const getTemporaryOrgRedirect = async ({
   currentQuery: ParsedUrlQuery;
   useRelativePath?: boolean;
 }): Promise<NextJsRedirect | null> => {
-  const prisma = (await import("@calcom/prisma")).default;
+  const prisma = (await import("@bookph/core/prisma")).default;
   log.debug(
     `Looking for redirect for`,
     safeStringify({
@@ -64,15 +64,20 @@ const getTemporaryOrgRedirect = async ({
 
   // Filter out any existing orgRedirection parameter to avoid duplicates
   // querystring.stringify transforms undefined values to empty strings, so we need to filter those out as well initially
-  const filteredQuery = Object.entries(currentQuery).reduce((acc, [key, value]) => {
-    if (key !== "orgRedirection" && value !== undefined) {
-      acc[key] = value;
-    }
-    return acc;
-  }, {} as ParsedUrlQuery);
+  const filteredQuery = Object.entries(currentQuery).reduce(
+    (acc, [key, value]) => {
+      if (key !== "orgRedirection" && value !== undefined) {
+        acc[key] = value;
+      }
+      return acc;
+    },
+    {} as ParsedUrlQuery
+  );
 
   const currentQueryString = stringify(filteredQuery);
-  const query = currentQueryString ? `?${currentQueryString}&orgRedirection=true` : "?orgRedirection=true";
+  const query = currentQueryString
+    ? `?${currentQueryString}&orgRedirection=true`
+    : "?orgRedirection=true";
   // Use the same order as in input slugs - It is important from Dynamic Group perspective as the first user's settings are used for various things
   const newSlugs = slugs.map((slug) => {
     const redirect = redirects.find((redirect) => redirect.from === slug);
@@ -192,7 +197,8 @@ export async function getRedirectWithOriginAndSearchString({
   const newDestination = nextJsRedirect.redirect.destination;
   // If there is an origin use it, otherwise mark no new Origin and it remains the same domain
   const newOrigin =
-    newDestination.startsWith("http://") || newDestination.startsWith("https://")
+    newDestination.startsWith("http://") ||
+    newDestination.startsWith("https://")
       ? new URL(newDestination).origin
       : null;
 

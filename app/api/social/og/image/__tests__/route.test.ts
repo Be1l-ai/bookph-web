@@ -16,11 +16,11 @@ vi.mock("next/og", () => ({
   })),
 }));
 
-vi.mock("@calcom/lib/OgImages", async (importOriginal) => {
+vi.mock("@bookph/core/lib/OgImages", async (importOriginal) => {
   return await importOriginal();
 });
 
-vi.mock(import("@calcom/lib/constants"), async (importOriginal) => {
+vi.mock(import("@bookph/core/lib/constants"), async (importOriginal) => {
   return await importOriginal();
 });
 

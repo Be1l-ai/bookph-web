@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { CalendarCacheEventRepository } from "@bookph/core/features/calendar-subscription/lib/cache/CalendarCacheEventRepository";
 import { CalendarCacheEventService } from "@bookph/core/features/calendar-subscription/lib/cache/CalendarCacheEventService";
 import { prisma } from "@bookph/core/prisma";
-import { defaultResponderForAppDir } from "@calcom/web/app/api/defaultResponderForAppDir";
+import { defaultResponderForAppDir } from "~/app/api/defaultResponderForAppDir";
 
 /**
  * Cron webhook
@@ -14,9 +14,15 @@ import { defaultResponderForAppDir } from "@calcom/web/app/api/defaultResponderF
  * @returns
  */
 async function getHandler(request: NextRequest) {
-  const apiKey = request.headers.get("authorization") || request.nextUrl.searchParams.get("apiKey");
+  const apiKey =
+    request.headers.get("authorization") ||
+    request.nextUrl.searchParams.get("apiKey");
 
-  if (![process.env.CRON_API_KEY, `Bearer ${process.env.CRON_SECRET}`].includes(`${apiKey}`)) {
+  if (
+    ![process.env.CRON_API_KEY, `Bearer ${process.env.CRON_SECRET}`].includes(
+      `${apiKey}`
+    )
+  ) {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 

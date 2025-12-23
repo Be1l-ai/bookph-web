@@ -61,7 +61,7 @@ function getPeriodTypeData({
   }
 }
 
-vi.mock("@calcom/lib/constants", () => ({
+vi.mock("@bookph/core/lib/constants", () => ({
   IS_PRODUCTION: true,
   WEBAPP_URL: "http://localhost:3000",
   RESERVED_SUBDOMAINS: ["auth", "docs"],

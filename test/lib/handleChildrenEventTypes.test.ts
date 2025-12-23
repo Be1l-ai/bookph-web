@@ -35,13 +35,13 @@ const mockFindFirstEventType = (
   return eventType;
 };
 
-vi.mock("@calcom/emails/integration-email-service", () => {
+vi.mock("@bookph/core/emails/integration-email-service", () => {
   return {
     sendSlugReplacementEmail: () => ({}),
   };
 });
 
-vi.mock("@calcom/lib/server/i18n", () => {
+vi.mock("@bookph/core/lib/server/i18n", () => {
   return {
     getTranslation: async (locale: string, namespace: string) => {
       const t = (key: string) => key;

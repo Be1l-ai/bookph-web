@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 import type z from "zod";
 
 import type { RoutingFormWithResponseCount } from "@bookph/core/app-store/routing-forms/types/types";
-import { WhenToWriteToRecord, SalesforceFieldType } from "@bookph/core/app-store/salesforce/lib/enums";
+import {
+  WhenToWriteToRecord,
+  SalesforceFieldType,
+} from "@bookph/core/app-store/salesforce/lib/enums";
 import type { writeToRecordDataSchema as salesforceWriteToRecordDataSchema } from "@bookph/core/app-store/salesforce/zod";
 import { routingFormIncompleteBookingDataSchema as salesforceRoutingFormIncompleteBookingDataSchema } from "@bookph/core/app-store/salesforce/zod";
 import { useLocale } from "@bookph/core/lib/hooks/useLocale";
@@ -18,42 +21,53 @@ import { Select } from "@bookph/ui/components/form";
 import { Label } from "@bookph/ui/components/form";
 import { Icon } from "@bookph/ui/components/icon";
 import { showToast } from "@bookph/ui/components/toast";
-import type { getServerSidePropsForSingleFormView as getServerSideProps } from "@calcom/web/lib/apps/routing-forms/[...pages]/getServerSidePropsSingleForm";
+import type { getServerSidePropsForSingleFormView as getServerSideProps } from "~/lib/apps/routing-forms/[...pages]/getServerSidePropsSingleForm";
 
 import SingleForm from "@components/apps/routing-forms/SingleForm";
 
 function Page({ form }: { form: RoutingFormWithResponseCount }) {
   const { t } = useLocale();
-  const { data, isLoading } = trpc.viewer.appRoutingForms.getIncompleteBookingSettings.useQuery({
-    formId: form.id,
-  });
+  const { data, isLoading } =
+    trpc.viewer.appRoutingForms.getIncompleteBookingSettings.useQuery({
+      formId: form.id,
+    });
 
-  const mutation = trpc.viewer.appRoutingForms.saveIncompleteBookingSettings.useMutation({
-    onSuccess: () => {
-      showToast(t("success"), "success");
-    },
-    onError: (error) => {
-      showToast(t(`error: ${error.message}`), "error");
-    },
-  });
+  const mutation =
+    trpc.viewer.appRoutingForms.saveIncompleteBookingSettings.useMutation({
+      onSuccess: () => {
+        showToast(t("success"), "success");
+      },
+      onError: (error) => {
+        showToast(t(`error: ${error.message}`), "error");
+      },
+    });
 
-  const [salesforceWriteToRecordObject, setSalesforceWriteToRecordObject] = useState<
-    z.infer<typeof salesforceWriteToRecordDataSchema>
-  >({});
+  const [salesforceWriteToRecordObject, setSalesforceWriteToRecordObject] =
+    useState<z.infer<typeof salesforceWriteToRecordDataSchema>>({});
 
   // Handle just Salesforce for now but need to expand this to other apps
-  const [salesforceActionEnabled, setSalesforceActionEnabled] = useState<boolean>(false);
+  const [salesforceActionEnabled, setSalesforceActionEnabled] =
+    useState<boolean>(false);
 
-  const fieldTypeOptions = [{ label: t("text"), value: SalesforceFieldType.TEXT }];
+  const fieldTypeOptions = [
+    { label: t("text"), value: SalesforceFieldType.TEXT },
+  ];
 
-  const [selectedFieldType, setSelectedFieldType] = useState(fieldTypeOptions[0]);
+  const [selectedFieldType, setSelectedFieldType] = useState(
+    fieldTypeOptions[0]
+  );
 
   const whenToWriteToRecordOptions = [
     { label: t("on_every_instance"), value: WhenToWriteToRecord.EVERY_BOOKING },
-    { label: t("only_if_field_is_empty"), value: WhenToWriteToRecord.FIELD_EMPTY },
+    {
+      label: t("only_if_field_is_empty"),
+      value: WhenToWriteToRecord.FIELD_EMPTY,
+    },
   ];
 
-  const [selectedWhenToWrite, setSelectedWhenToWrite] = useState(whenToWriteToRecordOptions[0]);
+  const [selectedWhenToWrite, setSelectedWhenToWrite] = useState(
+    whenToWriteToRecordOptions[0]
+  );
 
   const [newSalesforceAction, setNewSalesforceAction] = useState({
     field: "",
@@ -79,17 +93,21 @@ function Page({ form }: { form: RoutingFormWithResponseCount }) {
     if (salesforceAction) {
       setSalesforceActionEnabled(salesforceAction.enabled);
 
-      const parsedSalesforceActionData = salesforceRoutingFormIncompleteBookingDataSchema.safeParse(
-        salesforceAction.data
-      );
+      const parsedSalesforceActionData =
+        salesforceRoutingFormIncompleteBookingDataSchema.safeParse(
+          salesforceAction.data
+        );
       if (parsedSalesforceActionData.success) {
-        setSalesforceWriteToRecordObject(parsedSalesforceActionData.data?.writeToRecordObject ?? {});
+        setSalesforceWriteToRecordObject(
+          parsedSalesforceActionData.data?.writeToRecordObject ?? {}
+        );
       }
 
       setSelectedCredential(
         credentialOptions
-          ? credentialOptions.find((option) => option.value === salesforceAction?.credentialId) ??
-              selectedCredential
+          ? (credentialOptions.find(
+              (option) => option.value === salesforceAction?.credentialId
+            ) ?? selectedCredential)
           : selectedCredential
       );
     }
@@ -152,18 +170,23 @@ function Page({ form }: { form: RoutingFormWithResponseCount }) {
                 <div>
                   {Object.keys(salesforceWriteToRecordObject).map((key) => {
                     const action =
-                      salesforceWriteToRecordObject[key as keyof typeof salesforceWriteToRecordObject];
+                      salesforceWriteToRecordObject[
+                        key as keyof typeof salesforceWriteToRecordObject
+                      ];
                     return (
                       <div
                         className="mt-2 grid gap-4"
                         style={{ gridTemplateColumns: "repeat(5, 1fr)" }}
-                        key={key}>
+                        key={key}
+                      >
                         <div className="w-full">
                           <InputField value={key} readOnly />
                         </div>
                         <div className="w-full">
                           <Select
-                            value={fieldTypeOptions.find((option) => option.value === action.fieldType)}
+                            value={fieldTypeOptions.find(
+                              (option) => option.value === action.fieldType
+                            )}
                             isDisabled={true}
                           />
                         </div>
@@ -184,7 +207,9 @@ function Page({ form }: { form: RoutingFormWithResponseCount }) {
                             variant="icon"
                             color="destructive"
                             onClick={() => {
-                              const newActions = { ...salesforceWriteToRecordObject };
+                              const newActions = {
+                                ...salesforceWriteToRecordObject,
+                              };
                               delete newActions[key];
                               setSalesforceWriteToRecordObject(newActions);
                             }}
@@ -265,7 +290,9 @@ function Page({ form }: { form: RoutingFormWithResponseCount }) {
                   }
                   onClick={() => {
                     if (
-                      Object.keys(salesforceWriteToRecordObject).includes(newSalesforceAction.field.trim())
+                      Object.keys(salesforceWriteToRecordObject).includes(
+                        newSalesforceAction.field.trim()
+                      )
                     ) {
                       showToast("Field already exists", "error");
                       return;
@@ -286,7 +313,8 @@ function Page({ form }: { form: RoutingFormWithResponseCount }) {
                       value: "",
                       whenToWrite: WhenToWriteToRecord.FIELD_EMPTY,
                     });
-                  }}>
+                  }}
+                >
                   {t("add_new_field")}
                 </Button>
               </div>
@@ -304,9 +332,11 @@ function Page({ form }: { form: RoutingFormWithResponseCount }) {
                   },
                   actionType: IncompleteBookingActionType.SALESFORCE,
                   enabled: salesforceActionEnabled,
-                  credentialId: selectedCredential?.value ?? data?.credentials[0].id,
+                  credentialId:
+                    selectedCredential?.value ?? data?.credentials[0].id,
                 });
-              }}>
+              }}
+            >
               {t("save")}
             </Button>
           </div>

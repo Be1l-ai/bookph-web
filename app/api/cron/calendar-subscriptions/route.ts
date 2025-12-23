@@ -10,7 +10,7 @@ import { CalendarSyncService } from "@bookph/core/features/calendar-subscription
 import { FeaturesRepository } from "@bookph/core/features/flags/features.repository";
 import { SelectedCalendarRepository } from "@bookph/core/lib/server/repository/SelectedCalendarRepository";
 import { prisma } from "@bookph/core/prisma";
-import { defaultResponderForAppDir } from "@calcom/web/app/api/defaultResponderForAppDir";
+import { defaultResponderForAppDir } from "~/app/api/defaultResponderForAppDir";
 
 /**
  * Cron webhook
@@ -20,9 +20,15 @@ import { defaultResponderForAppDir } from "@calcom/web/app/api/defaultResponderF
  * @returns
  */
 async function getHandler(request: NextRequest) {
-  const apiKey = request.headers.get("authorization") || request.nextUrl.searchParams.get("apiKey");
+  const apiKey =
+    request.headers.get("authorization") ||
+    request.nextUrl.searchParams.get("apiKey");
 
-  if (![process.env.CRON_API_KEY, `Bearer ${process.env.CRON_SECRET}`].includes(`${apiKey}`)) {
+  if (
+    ![process.env.CRON_API_KEY, `Bearer ${process.env.CRON_SECRET}`].includes(
+      `${apiKey}`
+    )
+  ) {
     return NextResponse.json({ message: "Forbiden" }, { status: 403 });
   }
 

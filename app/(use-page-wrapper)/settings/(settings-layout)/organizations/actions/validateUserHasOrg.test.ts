@@ -17,7 +17,7 @@ vi.mock("next/headers", () => ({
   headers: vi.fn(() => Promise.resolve({})),
 }));
 
-vi.mock("@calcom/features/auth/lib/getServerSession", () => ({
+vi.mock("@bookph/core/features/auth/lib/getServerSession", () => ({
   getServerSession: vi.fn(),
 }));
 

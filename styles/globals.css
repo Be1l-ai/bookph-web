@@ -1,7 +1,4 @@
 @import "tailwindcss";
-@import "../../../packages/coss-ui/styles.css";
-@import "../../../packages/config/theme/shared-sources.css";
-@import "../../../packages/config/theme/tokens.css";
 @import "./raqb.css";
 
 ::-moz-selection {
@@ -127,7 +124,7 @@ html.todesktop.dark {
  * Override the default tailwindcss-forms styling (default is: 'colors.blue.600')
  * @see: https://github.com/tailwindlabs/tailwindcss-forms/issues/14#issuecomment-1005376006
  */
- @layer base {
+@layer base {
   [type="text"]:focus,
   [type="email"]:focus,
   [type="url"]:focus,
@@ -152,7 +149,12 @@ html.todesktop.dark {
 
 @layer components {
   .scroll-bar {
-    @apply scrollbar-thin scrollbar-thumb-rounded-md dark:scrollbar-thumb-darkgray-300 scrollbar-thumb-gray-300 scrollbar-track-transparent;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(209 213 219) transparent;
+  }
+
+  .dark .scroll-bar {
+    scrollbar-color: rgb(55 65 81) transparent;
   }
 }
 
@@ -402,16 +404,29 @@ html.todesktop.dark {
 
 .react-tel-input .country-list .country:hover,
 .react-tel-input .country-list .country.highlight {
-  @apply bg-emphasis!;
+  background-color: var(--cal-bg-emphasis, rgb(243 244 246)) !important;
 }
 
 .react-tel-input .flag-dropdown .selected-flag,
 .react-tel-input .flag-dropdown.open .selected-flag {
-  @apply bg-default!;
+  background-color: white !important;
+}
+
+.dark .react-tel-input .flag-dropdown .selected-flag,
+.dark .react-tel-input .flag-dropdown.open .selected-flag {
+  background-color: rgb(17 24 39) !important;
 }
 
 .react-tel-input .flag-dropdown {
-  @apply border-r-default! left-0.5 border-y-0! border-l-0!;
+  border-right: 1px solid rgb(229 231 235) !important;
+  left: 0.125rem !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+}
+
+.dark .react-tel-input .flag-dropdown {
+  border-right-color: rgb(55 65 81) !important;
 }
 
 [data-radix-popper-content-wrapper] {

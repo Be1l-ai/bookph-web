@@ -1,7 +1,7 @@
 import { createRouterCaller } from "app/_trpc/context";
 import { _generateMetadata } from "app/_utils";
 
-import { ConferencingAppsViewWebWrapper } from "@calcom/atoms/connect/conferencing-apps/ConferencingAppsViewWebWrapper";
+import { ConferencingAppsViewWebWrapper } from "@bookph/core/atoms/connect/conferencing-apps/ConferencingAppsViewWebWrapper";
 import { appsRouter } from "@bookph/core/trpc/server/routers/viewer/apps/_router";
 import { eventTypesRouter } from "@bookph/core/trpc/server/routers/viewer/eventTypes/_router";
 
@@ -20,11 +20,12 @@ const Page = async () => {
     createRouterCaller(eventTypesRouter),
   ]);
 
-  const [integrations, defaultConferencingApp, eventTypesQueryData] = await Promise.all([
-    appsCaller.integrations({ variant: "conferencing", onlyInstalled: true }),
-    appsCaller.getUsersDefaultConferencingApp(),
-    eventTypesCaller.bulkEventFetch(),
-  ]);
+  const [integrations, defaultConferencingApp, eventTypesQueryData] =
+    await Promise.all([
+      appsCaller.integrations({ variant: "conferencing", onlyInstalled: true }),
+      appsCaller.getUsersDefaultConferencingApp(),
+      eventTypesCaller.bulkEventFetch(),
+    ]);
 
   return (
     <ConferencingAppsViewWebWrapper

@@ -8,7 +8,7 @@ import { QueryCell } from "../../../lib/QueryCell";
 import { EditLocationDialog } from "../EditLocationDialog";
 
 // // Mock the trpc hook
-vi.mock("@calcom/trpc/react", () => ({
+vi.mock("@bookph/core/trpc/react", () => ({
   trpc: {
     viewer: {
       apps: {
@@ -32,7 +32,7 @@ vi.mock("next/navigation", async (importOriginal) => {
   };
 });
 
-vi.mock("@calcom/lib/hooks/useLocale", () => ({
+vi.mock("@bookph/core/lib/hooks/useLocale", () => ({
   useLocale: () => ({ t: (key: string) => key }),
 }));
 
@@ -40,7 +40,7 @@ vi.mock("../../../lib/QueryCell", () => ({
   QueryCell: vi.fn(),
 }));
 
-vi.mock("@calcom/features/form/components/LocationSelect", () => {
+vi.mock("@bookph/core/features/form/components/LocationSelect", () => {
   return {
     default: vi.fn(),
   };

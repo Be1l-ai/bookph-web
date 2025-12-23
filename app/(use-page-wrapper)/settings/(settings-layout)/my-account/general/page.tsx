@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 import { getServerSession } from "@bookph/core/features/auth/lib/getServerSession";
 import { meRouter } from "@bookph/core/trpc/server/routers/viewer/me/_router";
-import { getTravelSchedule } from "@calcom/web/app/cache/travelSchedule";
+import { getTravelSchedule } from "~/app/cache/travelSchedule";
 
 import { buildLegacyRequest } from "@lib/buildLegacyCtx";
 
@@ -21,7 +21,9 @@ export const generateMetadata = async () =>
   );
 
 const Page = async () => {
-  const session = await getServerSession({ req: buildLegacyRequest(await headers(), await cookies()) });
+  const session = await getServerSession({
+    req: buildLegacyRequest(await headers(), await cookies()),
+  });
   const userId = session?.user?.id;
   const redirectUrl = "/auth/login?callbackUrl=/settings/my-account/general";
 
@@ -30,7 +32,10 @@ const Page = async () => {
   }
 
   const meCaller = await createRouterCaller(meRouter);
-  const [user, travelSchedules] = await Promise.all([meCaller.get(), getTravelSchedule(userId)]);
+  const [user, travelSchedules] = await Promise.all([
+    meCaller.get(),
+    getTravelSchedule(userId),
+  ]);
   if (!user) {
     redirect(redirectUrl);
   }

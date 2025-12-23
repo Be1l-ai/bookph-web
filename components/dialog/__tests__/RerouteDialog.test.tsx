@@ -23,7 +23,7 @@ vi.mock("next/navigation", async (importOriginal) => {
   };
 });
 
-vi.mock("@calcom/app-store/routing-forms/lib/processRoute", () => ({
+vi.mock("@bookph/core/app-store/routing-forms/lib/processRoute", () => ({
   findMatchingRoute: vi.fn(({ form, response }) => {
     return form.routes.find((route: any) => route.__testMatching);
   }),
@@ -48,7 +48,7 @@ const mockSession = {
   },
 } as Session;
 
-vi.mock("@calcom/app-store/routing-forms/components/FormInputFields", () => ({
+vi.mock("@bookph/core/app-store/routing-forms/components/FormInputFields", () => ({
   default: vi.fn(({ response, form, setResponse, disabledFields }) => {
     return (
       <div data-testid="mock-form-input-fields">
@@ -81,7 +81,7 @@ vi.mock("@calcom/app-store/routing-forms/components/FormInputFields", () => ({
   FormInputFieldsSkeleton: vi.fn(() => <div data-testid="mock-form-input-fields-skeleton" />),
 }));
 
-vi.mock("@calcom/lib/hooks/useLocale", () => ({
+vi.mock("@bookph/core/lib/hooks/useLocale", () => ({
   useLocale: vi.fn(() => ({ t: (key: string) => key })),
 }));
 
@@ -93,11 +93,11 @@ vi.mock("@calcom/web/lib/hooks/useRouterQuery", () => ({
   }),
 }));
 
-vi.mock("@calcom/ui/components/tooltip", () => ({
+vi.mock("@bookph/ui/components/tooltip", () => ({
   Tooltip: vi.fn(({ children }) => <div data-testid="mock-tooltip">{children}</div>),
 }));
 
-vi.mock("@calcom/trpc/react", () => ({
+vi.mock("@bookph/core/trpc/react", () => ({
   trpc: {
     viewer: {
       appRoutingForms: {

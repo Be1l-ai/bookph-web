@@ -4,7 +4,7 @@ import { CreateANewPlatformForm } from "@bookph/core/features/ee/platform/compon
 import { useLocale } from "@bookph/core/lib/hooks/useLocale";
 import { Alert } from "@bookph/ui/components/alert";
 import { WizardLayout } from "@bookph/ui/components/layout";
-import { useGetUserAttributes } from "@calcom/web/components/settings/platform/hooks/useGetUserAttributes";
+import { useGetUserAttributes } from "~/components/settings/platform/hooks/useGetUserAttributes";
 
 export const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
   const { t } = useLocale();
@@ -14,7 +14,10 @@ export const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
     return (
       <div className="flex h-full min-h-screen items-center justify-center">
         <div className="max-w-lg">
-          <Alert severity="warning" title={t("organization_customer_cant_create_platform")} />
+          <Alert
+            severity="warning"
+            title={t("organization_customer_cant_create_platform")}
+          />
         </div>
       </div>
     );

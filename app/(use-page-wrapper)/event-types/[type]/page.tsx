@@ -1,12 +1,16 @@
 import { createRouterCaller, getTRPCContext } from "app/_trpc/context";
-import type { PageProps, ReadonlyHeaders, ReadonlyRequestCookies } from "app/_types";
+import type {
+  PageProps,
+  ReadonlyHeaders,
+  ReadonlyRequestCookies,
+} from "app/_types";
 import { _generateMetadata } from "app/_utils";
 import { unstable_cache } from "next/cache";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-import { EventTypeWebWrapper } from "@calcom/atoms/event-types/wrappers/EventTypeWebWrapper";
+import { EventTypeWebWrapper } from "@bookph/core/atoms/event-types/wrappers/EventTypeWebWrapper";
 import { getServerSession } from "@bookph/core/features/auth/lib/getServerSession";
 import { getEventTypePermissions } from "@bookph/core/features/pbac/lib/event-type-permissions";
 import { eventTypesRouter } from "@bookph/core/trpc/server/routers/viewer/eventTypes/_router";
@@ -33,8 +37,15 @@ export const generateMetadata = async () => {
 };
 
 const getCachedEventType = unstable_cache(
-  async (eventTypeId: number, headers: ReadonlyHeaders, cookies: ReadonlyRequestCookies) => {
-    const caller = await createRouterCaller(eventTypesRouter, await getTRPCContext(headers, cookies));
+  async (
+    eventTypeId: number,
+    headers: ReadonlyHeaders,
+    cookies: ReadonlyRequestCookies
+  ) => {
+    const caller = await createRouterCaller(
+      eventTypesRouter,
+      await getTRPCContext(headers, cookies)
+    );
     return await caller.get({ id: eventTypeId });
   },
   ["viewer.eventTypes.get"],
@@ -42,7 +53,9 @@ const getCachedEventType = unstable_cache(
 );
 
 const ServerPage = async ({ params }: PageProps) => {
-  const session = await getServerSession({ req: buildLegacyRequest(await headers(), await cookies()) });
+  const session = await getServerSession({
+    req: buildLegacyRequest(await headers(), await cookies()),
+  });
   if (!session?.user?.id) {
     return redirect("/auth/login");
   }
@@ -61,9 +74,18 @@ const ServerPage = async ({ params }: PageProps) => {
   }
 
   // Fetch permissions for the event type's team
-  const permissions = await getEventTypePermissions(session.user.id, data.eventType.teamId);
+  const permissions = await getEventTypePermissions(
+    session.user.id,
+    data.eventType.teamId
+  );
 
-  return <EventTypeWebWrapper data={data} id={eventTypeId} permissions={permissions} />;
+  return (
+    <EventTypeWebWrapper
+      data={data}
+      id={eventTypeId}
+      permissions={permissions}
+    />
+  );
 };
 
 export default ServerPage;

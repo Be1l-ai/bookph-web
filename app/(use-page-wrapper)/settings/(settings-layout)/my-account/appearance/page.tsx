@@ -7,7 +7,7 @@ import { getServerSession } from "@bookph/core/features/auth/lib/getServerSessio
 import { IS_SELF_HOSTED } from "@bookph/core/lib/constants";
 import hasKeyInMetadata from "@bookph/core/lib/hasKeyInMetadata";
 import { meRouter } from "@bookph/core/trpc/server/routers/viewer/me/_router";
-import { getCachedHasTeamPlan } from "@calcom/web/app/cache/membership";
+import { getCachedHasTeamPlan } from "~/app/cache/membership";
 
 import { buildLegacyRequest } from "@lib/buildLegacyCtx";
 
@@ -23,7 +23,9 @@ export const generateMetadata = async () =>
   );
 
 const Page = async () => {
-  const session = await getServerSession({ req: buildLegacyRequest(await headers(), await cookies()) });
+  const session = await getServerSession({
+    req: buildLegacyRequest(await headers(), await cookies()),
+  });
   const userId = session?.user?.id;
   const redirectUrl = "/auth/login?callbackUrl=/settings/my-account/appearance";
 
@@ -42,8 +44,12 @@ const Page = async () => {
     redirect(redirectUrl);
   }
   const isCurrentUsernamePremium =
-    user && hasKeyInMetadata(user, "isPremium") ? !!user.metadata.isPremium : false;
-  const hasPaidPlan = IS_SELF_HOSTED ? true : hasTeamPlan?.hasTeamPlan || isCurrentUsernamePremium;
+    user && hasKeyInMetadata(user, "isPremium")
+      ? !!user.metadata.isPremium
+      : false;
+  const hasPaidPlan = IS_SELF_HOSTED
+    ? true
+    : hasTeamPlan?.hasTeamPlan || isCurrentUsernamePremium;
 
   return <AppearancePage user={user} hasPaidPlan={hasPaidPlan} />;
 };

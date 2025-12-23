@@ -6,20 +6,31 @@ import {
   getMockBookingAttendee,
   getOrganizer,
   getBooker,
-} from "@calcom/web/test/utils/bookingScenario/bookingScenario";
-import { expectWebhookToHaveBeenCalledWith } from "@calcom/web/test/utils/bookingScenario/expects";
+} from "~/test/utils/bookingScenario/bookingScenario";
+import { expectWebhookToHaveBeenCalledWith } from "~/test/utils/bookingScenario/expects";
 
 import { NextRequest } from "next/server";
 import { createMocks } from "node-mocks-http";
-import { describe, afterEach, test, vi, beforeEach, beforeAll, expect } from "vitest";
+import {
+  describe,
+  afterEach,
+  test,
+  vi,
+  beforeEach,
+  beforeAll,
+  expect,
+} from "vitest";
 
 import { appStoreMetadata } from "@bookph/core/app-store/apps.metadata.generated";
-import { getRoomNameFromRecordingId, getBatchProcessorJobAccessLink } from "@bookph/core/app-store/dailyvideo/lib";
+import {
+  getRoomNameFromRecordingId,
+  getBatchProcessorJobAccessLink,
+} from "@bookph/core/app-store/dailyvideo/lib";
 import { WEBAPP_URL } from "@bookph/core/lib/constants";
 import prisma from "@bookph/core/prisma";
 import { WebhookTriggerEvents } from "@bookph/core/prisma/enums";
 import { BookingStatus } from "@bookph/core/prisma/enums";
-import * as recordedDailyVideoRoute from "@calcom/web/app/api/recorded-daily-video/route";
+import * as recordedDailyVideoRoute from "~/app/api/recorded-daily-video/route";
 
 // Mock the next/headers module before importing the handler
 vi.mock("next/headers", () => ({
@@ -63,14 +74,14 @@ beforeAll(() => {
   vi.stubEnv("SENDGRID_EMAIL", "FAKE_SENDGRID_EMAIL");
 });
 
-vi.mock("@calcom/app-store/dailyvideo/lib", () => {
+vi.mock("@bookph/core/app-store/dailyvideo/lib", () => {
   return {
     getRoomNameFromRecordingId: vi.fn(),
     getBatchProcessorJobAccessLink: vi.fn(),
   };
 });
 
-vi.mock("@calcom/lib/videoTokens", () => {
+vi.mock("@bookph/core/lib/videoTokens", () => {
   return {
     generateVideoToken: vi.fn().mockReturnValue("MOCK_TOKEN"),
   };
@@ -152,7 +163,9 @@ const TRANSCRIPTION_ACCESS_LINK = {
 };
 
 // We may need to make this more globally available. Will move if we need it elsewhere
-function createNextRequest(mockReq: ReturnType<typeof createMocks>["req"]): NextRequest {
+function createNextRequest(
+  mockReq: ReturnType<typeof createMocks>["req"]
+): NextRequest {
   // Create a Request object that NextRequest can wrap
   const request = new Request("https://example.com/api/recorded-daily-video", {
     method: mockReq.method,
@@ -201,7 +214,9 @@ describe("Handler: /api/recorded-daily-video", () => {
           webhooks: [
             {
               userId: organizer.id,
-              eventTriggers: [WebhookTriggerEvents.RECORDING_TRANSCRIPTION_GENERATED],
+              eventTriggers: [
+                WebhookTriggerEvents.RECORDING_TRANSCRIPTION_GENERATED,
+              ],
               subscriberUrl,
               active: true,
               eventTypeId: 1,
@@ -229,7 +244,8 @@ describe("Handler: /api/recorded-daily-video", () => {
               endTime: `${plus1DateString}T05:15:00.000Z`,
               userId: organizer.id,
               metadata: {
-                videoCallUrl: "https://existing-daily-video-call-url.example.com",
+                videoCallUrl:
+                  "https://existing-daily-video-call-url.example.com",
               },
               references: [
                 {
@@ -260,7 +276,9 @@ describe("Handler: /api/recorded-daily-video", () => {
       );
 
       vi.mocked(getRoomNameFromRecordingId).mockResolvedValue("MOCK_ID");
-      vi.mocked(getBatchProcessorJobAccessLink).mockResolvedValue(TRANSCRIPTION_ACCESS_LINK);
+      vi.mocked(getBatchProcessorJobAccessLink).mockResolvedValue(
+        TRANSCRIPTION_ACCESS_LINK
+      );
 
       const { req } = createMocks({
         method: "POST",

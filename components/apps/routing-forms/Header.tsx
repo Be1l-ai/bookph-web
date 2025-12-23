@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 import { useLocale } from "@bookph/core/lib/hooks/useLocale";
-import type { RoutingFormWithResponseCount } from "@calcom/routing-forms/types/types";
+import type { RoutingFormWithResponseCount } from "@bookph/core/app-store/routing-forms/types/types";
 import { Button } from "@bookph/ui/components/button";
 import { DropdownMenuSeparator } from "@bookph/ui/components/dropdown";
 import { ToggleGroup } from "@bookph/ui/components/form";
@@ -85,12 +85,15 @@ const Actions = ({
           <Tooltip sideOffset={4} content={t("preview")} side="bottom">
             <Button
               color="secondary"
-              data-testid={isMobile ? "preview-button-mobile" : "preview-button"}
+              data-testid={
+                isMobile ? "preview-button-mobile" : "preview-button"
+              }
               type="button"
               variant="icon"
               onClick={() => {
                 setIsTestPreviewOpen(!isTestPreviewOpen);
-              }}>
+              }}
+            >
               {t("preview")}
             </Button>
           </Tooltip>
@@ -99,7 +102,9 @@ const Actions = ({
               color="secondary"
               type="button"
               StartIcon="settings"
-              data-testid={isMobile ? "settings-button-mobile" : "settings-button"}
+              data-testid={
+                isMobile ? "settings-button-mobile" : "settings-button"
+              }
               onClick={() => {
                 setIsSettingsDialogOpen(true);
               }}
@@ -113,7 +118,8 @@ const Actions = ({
               type="button"
               rel="noreferrer"
               action="preview"
-              StartIcon="external-link">
+              StartIcon="external-link"
+            >
               {t("view_form")}
             </FormAction>
             <FormAction
@@ -122,7 +128,8 @@ const Actions = ({
               routingForm={form}
               color="minimal"
               type="button"
-              StartIcon="calendar">
+              StartIcon="calendar"
+            >
               {t("routing_incomplete_booking_tab")}
             </FormAction>
             <FormAction
@@ -131,7 +138,8 @@ const Actions = ({
               routingForm={form}
               color="minimal"
               type="button"
-              StartIcon="link">
+              StartIcon="link"
+            >
               {t("copy_link_to_form")}
             </FormAction>
             <FormAction
@@ -141,7 +149,8 @@ const Actions = ({
               color="minimal"
               type="button"
               data-testid="download-responses"
-              StartIcon="download">
+              StartIcon="download"
+            >
               {t("download_responses")}
             </FormAction>
             {form?.id && (
@@ -152,7 +161,8 @@ const Actions = ({
                 color="minimal"
                 type="button"
                 data-testid="view-responses"
-                StartIcon="eye">
+                StartIcon="eye"
+              >
                 {t("view_responses")}
               </FormAction>
             )}
@@ -162,7 +172,8 @@ const Actions = ({
               color="minimal"
               type="button"
               className="w-full"
-              StartIcon="code">
+              StartIcon="code"
+            >
               {t("embed")}
             </FormAction>
             <DropdownMenuSeparator className="hidden sm:block" />
@@ -173,7 +184,8 @@ const Actions = ({
               type="button"
               color="destructive"
               disabled={!permissions.canDelete}
-              StartIcon="trash">
+              StartIcon="trash"
+            >
               {t("delete")}
             </FormAction>
             <div className="block sm:hidden">
@@ -192,7 +204,8 @@ const Actions = ({
             loading={isSaving}
             disabled={!permissions.canEdit}
             type="submit"
-            color="primary">
+            color="primary"
+          >
             {t("save")}
           </Button>
         </div>
@@ -276,7 +289,9 @@ export function Header({
           <span className="text-subtle min-w-content text-sm font-semibold leading-none">
             {t("routing_form")}
           </span>
-          <span className="text-subtle mx-1 text-sm font-semibold leading-none">/</span>
+          <span className="text-subtle mx-1 text-sm font-semibold leading-none">
+            /
+          </span>
           {isEditing ? (
             <input
               {...form.register("name")}
@@ -290,7 +305,8 @@ export function Header({
             <div className="group flex items-center gap-1">
               <span
                 className="text-default hover:bg-cal-muted min-w-[100px] cursor-pointer truncate whitespace-nowrap rounded px-1 text-sm font-semibold leading-none"
-                onClick={() => setIsEditing(true)}>
+                onClick={() => setIsEditing(true)}
+              >
                 {watchedName || "Loading..."}
               </span>
               <Button
@@ -298,8 +314,12 @@ export function Header({
                 color="minimal"
                 onClick={() => setIsEditing(true)}
                 CustomStartIcon={
-                  <Icon name="pencil" className="text-subtle group-hover:text-default h-3 w-3" />
-                }>
+                  <Icon
+                    name="pencil"
+                    className="text-subtle group-hover:text-default h-3 w-3"
+                  />
+                }
+              >
                 <span className="sr-only">Edit</span>
               </Button>
             </div>

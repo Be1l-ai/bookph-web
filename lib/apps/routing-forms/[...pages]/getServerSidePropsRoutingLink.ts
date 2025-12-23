@@ -2,7 +2,10 @@ import { enrichFormWithMigrationData } from "@bookph/core/app-store/routing-form
 import { getSerializableForm } from "@bookph/core/app-store/routing-forms/lib/getSerializableForm";
 import { orgDomainConfig } from "@bookph/core/features/ee/organizations/lib/orgDomains";
 import { isAuthorizedToViewFormOnOrgDomain } from "@bookph/core/features/routing-forms/lib/isAuthorizedToViewForm";
-import type { AppGetServerSidePropsContext, AppPrisma } from "@bookph/core/types/AppGetServerSideProps";
+import type {
+  AppGetServerSidePropsContext,
+  AppPrisma,
+} from "@bookph/core/types/AppGetServerSideProps";
 
 export const getServerSideProps = async function getServerSideProps(
   context: AppGetServerSidePropsContext,
@@ -65,7 +68,9 @@ export const getServerSideProps = async function getServerSideProps(
     };
   }
 
-  const { UserRepository } = await import("@calcom/features/users/repositories/UserRepository");
+  const { UserRepository } = await import(
+    "@bookph/core/features/users/repositories/UserRepository"
+  );
   const userRepo = new UserRepository(prisma);
   const formWithUserProfile = {
     ...form,
@@ -73,7 +78,11 @@ export const getServerSideProps = async function getServerSideProps(
   };
 
   if (
-    !isAuthorizedToViewFormOnOrgDomain({ user: formWithUserProfile.user, currentOrgDomain, team: form.team })
+    !isAuthorizedToViewFormOnOrgDomain({
+      user: formWithUserProfile.user,
+      currentOrgDomain,
+      team: form.team,
+    })
   ) {
     return {
       notFound: true,
@@ -83,14 +92,19 @@ export const getServerSideProps = async function getServerSideProps(
     props: {
       isEmbed,
       profile: {
-        theme: formWithUserProfile.user.profile?.organization?.theme ?? formWithUserProfile.user.theme,
+        theme:
+          formWithUserProfile.user.profile?.organization?.theme ??
+          formWithUserProfile.user.theme,
         brandColor:
-          formWithUserProfile.user.profile?.organization?.brandColor ?? formWithUserProfile.user.brandColor,
+          formWithUserProfile.user.profile?.organization?.brandColor ??
+          formWithUserProfile.user.brandColor,
         darkBrandColor:
           formWithUserProfile.user.profile?.organization?.darkBrandColor ??
           formWithUserProfile.user.darkBrandColor,
       },
-      form: await getSerializableForm({ form: enrichFormWithMigrationData(formWithUserProfile) }),
+      form: await getSerializableForm({
+        form: enrichFormWithMigrationData(formWithUserProfile),
+      }),
     },
   };
 };

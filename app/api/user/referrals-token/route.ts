@@ -2,8 +2,8 @@ import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
 import { headers, cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { dub } from "@calcom/feature-auth/lib/dub";
-import { getServerSession } from "@calcom/feature-auth/lib/getServerSession";
+import { dub } from "@bookph/core/features/auth/lib/dub";
+import { getServerSession } from "@bookph/core/features/auth/lib/getServerSession";
 import { IS_DUB_REFERRALS_ENABLED } from "@bookph/core/lib/constants";
 
 import { buildLegacyRequest } from "@lib/buildLegacyCtx";
@@ -13,10 +13,15 @@ export const dynamic = "force-dynamic";
 const handler = async () => {
   // Return early if the feature is disabled
   if (!IS_DUB_REFERRALS_ENABLED) {
-    return NextResponse.json({ error: "Referrals feature is disabled" }, { status: 404 });
+    return NextResponse.json(
+      { error: "Referrals feature is disabled" },
+      { status: 404 }
+    );
   }
 
-  const session = await getServerSession({ req: buildLegacyRequest(await headers(), await cookies()) });
+  const session = await getServerSession({
+    req: buildLegacyRequest(await headers(), await cookies()),
+  });
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

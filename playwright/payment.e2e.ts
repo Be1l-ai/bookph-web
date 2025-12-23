@@ -1,6 +1,9 @@
 import { expect } from "@playwright/test";
 
-import { bookTimeSlot, selectFirstAvailableTimeSlotNextMonth } from "@calcom/web/playwright/lib/testUtils";
+import {
+  bookTimeSlot,
+  selectFirstAvailableTimeSlotNextMonth,
+} from "~/playwright/lib/testUtils";
 
 import { test } from "./lib/fixtures";
 
@@ -12,8 +15,15 @@ test.describe("Payment", () => {
       await users.deleteAll();
     });
 
-    test("should create a mock payment for a user", async ({ context, users, page }) => {
-      test.skip(process.env.MOCK_PAYMENT_APP_ENABLED === undefined, "Skipped as Stripe is not installed");
+    test("should create a mock payment for a user", async ({
+      context,
+      users,
+      page,
+    }) => {
+      test.skip(
+        process.env.MOCK_PAYMENT_APP_ENABLED === undefined,
+        "Skipped as Stripe is not installed"
+      );
 
       const user = await users.create();
       await user.apiLogin();
@@ -24,7 +34,9 @@ test.describe("Payment", () => {
 
       await page.getByTestId("install-app-button").click();
 
-      await page.waitForURL((url) => url.pathname.endsWith("/apps/installed/payment"));
+      await page.waitForURL((url) =>
+        url.pathname.endsWith("/apps/installed/payment")
+      );
 
       await page.getByRole("link", { name: "Event Types" }).click();
 

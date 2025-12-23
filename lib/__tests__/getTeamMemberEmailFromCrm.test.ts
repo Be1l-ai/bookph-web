@@ -13,13 +13,13 @@ import { RouteActionType } from "@bookph/core/app-store/routing-forms/zod";
 import { getTeamMemberEmailForResponseOrContactUsingUrlQuery } from "@bookph/core/features/ee/teams/lib/getTeamMemberEmailFromCrm";
 import { SchedulingType } from "@bookph/core/prisma/enums";
 
-vi.mock("@calcom/app-store/routing-forms/appBookingFormHandler", () => ({
+vi.mock("@bookph/core/app-store/routing-forms/appBookingFormHandler", () => ({
   default: {
     salesforce: vi.fn(),
   },
 }));
 
-vi.mock("@calcom/app-store/_utils/CRMRoundRobinSkip", () => ({
+vi.mock("@bookph/core/app-store/_utils/CRMRoundRobinSkip", () => ({
   getCRMContactOwnerForRRLeadSkip: vi.fn(),
 }));
 

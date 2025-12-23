@@ -18,11 +18,11 @@ vi.mock("next/headers", () => ({
   headers: vi.fn(() => Promise.resolve({})),
 }));
 
-vi.mock("@calcom/features/auth/lib/getServerSession", () => ({
+vi.mock("@bookph/core/features/auth/lib/getServerSession", () => ({
   getServerSession: vi.fn(),
 }));
 
-vi.mock("@calcom/features/auth/lib/checkAdminOrOwner", () => ({
+vi.mock("@bookph/core/features/auth/lib/checkAdminOrOwner", () => ({
   checkAdminOrOwner: vi.fn(),
 }));
 

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import type { getServerSideProps } from "@bookph/core/app-store/_pages/setup/_getServerSideProps";
 import { useCompatSearchParams } from "@bookph/core/lib/hooks/useCompatSearchParams";
 import type { inferSSRProps } from "@bookph/core/types/inferSSRProps";
-import { AppSetupPage } from "@calcom/web/components/apps/AppSetupPage";
+import { AppSetupPage } from "~/components/apps/AppSetupPage";
 
 export type PageProps = inferSSRProps<typeof getServerSideProps>;
 
@@ -17,7 +17,9 @@ export default function SetupInformation(props: PageProps) {
   const { status } = useSession();
 
   if (status === "loading") {
-    return <div className="bg-emphasis absolute z-50 flex h-screen w-full items-center" />;
+    return (
+      <div className="bg-emphasis absolute z-50 flex h-screen w-full items-center" />
+    );
   }
 
   if (status === "unauthenticated") {

@@ -1,10 +1,10 @@
-import { createOrganization } from "@calcom/web/test/utils/bookingScenario/bookingScenario";
+import { createOrganization } from "~/test/utils/bookingScenario/bookingScenario";
 
 import type { TestFunction } from "vitest";
 
 import { WEBSITE_URL } from "@bookph/core/lib/constants";
-import { test } from "@calcom/web/test/fixtures/fixtures";
-import type { Fixtures } from "@calcom/web/test/fixtures/fixtures";
+import { test } from "~/test/fixtures/fixtures";
+import type { Fixtures } from "~/test/fixtures/fixtures";
 
 const WEBSITE_PROTOCOL = new URL(WEBSITE_URL).protocol;
 const _testWithAndWithoutOrg = (
@@ -16,7 +16,15 @@ const _testWithAndWithoutOrg = (
   const t = mode === "only" ? test.only : mode === "skip" ? test.skip : test;
   t(
     `${description} - With org`,
-    async ({ emails, sms, task, onTestFailed, expect, skip, onTestFinished }) => {
+    async ({
+      emails,
+      sms,
+      task,
+      onTestFailed,
+      expect,
+      skip,
+      onTestFinished,
+    }) => {
       const org = await createOrganization({
         name: "Test Org",
         slug: "testorg",
@@ -41,7 +49,15 @@ const _testWithAndWithoutOrg = (
 
   t(
     `${description}`,
-    async ({ emails, sms, task, onTestFailed, expect, skip, onTestFinished }) => {
+    async ({
+      emails,
+      sms,
+      task,
+      onTestFailed,
+      expect,
+      skip,
+      onTestFinished,
+    }) => {
       await fn({
         emails,
         sms,

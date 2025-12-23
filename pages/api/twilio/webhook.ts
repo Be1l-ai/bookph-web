@@ -33,7 +33,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   const signature = req.headers["x-twilio-signature"];
   const baseUrl = `${WEBAPP_URL}/api/twilio/webhook`;
 
-  const queryParams = new URLSearchParams(req.query as Record<string, string>).toString();
+  const queryParams = new URLSearchParams(
+    req.query as Record<string, string>
+  ).toString();
   const requestUrl = queryParams ? `${baseUrl}?${queryParams}` : baseUrl;
 
   if (typeof signature !== "string") {
@@ -73,7 +75,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!parsedUserId && !parsedTeamId) {
     return res.status(401).send("Team or user id is required");
   }
-  const { CreditService } = await import("@calcom/features/ee/billing/credit-service");
+  const { CreditService } = await import(
+    "@bookph/core/features/ee/billing/credit-service"
+  );
   const creditService = new CreditService();
 
   if (countryCode === "US" || countryCode === "CA") {
@@ -105,7 +109,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         creditFor: CreditUsageType.SMS,
       });
 
-      return res.status(200).send(`SMS to US and CA are free for teams. Credits set to 0`);
+      return res
+        .status(200)
+        .send(`SMS to US and CA are free for teams. Credits set to 0`);
     }
   }
 
@@ -140,7 +146,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       creditFor: CreditUsageType.SMS,
     });
 
-    return res.status(200).send(`SMS are free for organizations. Credits set to 0`);
+    return res
+      .status(200)
+      .send(`SMS are free for organizations. Credits set to 0`);
   }
 
   const { price, numSegments } = await twilio.getMessageInfo(smsSid);

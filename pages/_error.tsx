@@ -7,7 +7,7 @@ import type { ErrorProps } from "next/error";
 import NextError from "next/error";
 import React from "react";
 
-import "@calcom/embed-core/src/embed-iframe";
+import "@bookph/core/embed-core/src/embed-iframe";
 import { getErrorFromUnknown } from "@bookph/core/lib/errors";
 import { HttpError } from "@bookph/core/lib/http-error";
 import logger from "@bookph/core/lib/logger";

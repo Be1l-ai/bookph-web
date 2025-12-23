@@ -1,6 +1,10 @@
 import prismaMock from "../../../../../tests/libs/__mocks__/prisma";
 
-import type { InputEventType, getOrganizer, CalendarServiceMethodMock } from "./bookingScenario";
+import type {
+  InputEventType,
+  getOrganizer,
+  CalendarServiceMethodMock,
+} from "./bookingScenario";
 
 import { parse } from "node-html-parser";
 import type { VEvent } from "node-ical";
@@ -23,16 +27,21 @@ import { BookingStatus } from "@bookph/core/prisma/enums";
 import type { AppsStatus } from "@bookph/core/types/Calendar";
 import type { CalendarEvent } from "@bookph/core/types/Calendar";
 import type { CredentialForCalendarService } from "@bookph/core/types/Credential";
-import type { Fixtures } from "@calcom/web/test/fixtures/fixtures";
+import type { Fixtures } from "~/test/fixtures/fixtures";
 
 import { DEFAULT_TIMEZONE_BOOKER } from "./getMockRequestDataForBooking";
 
 // This is too complex at the moment, I really need to simplify this.
 // Maybe we can replace the exact match with a partial match approach that would be easier to maintain but we would still need Dayjs to do the timezone conversion
 // Alternative could be that we use some other library to do the timezone conversion?
-function formatDateToWhenFormat({ start, end }: { start: Date; end: Date }, timeZone: string) {
+function formatDateToWhenFormat(
+  { start, end }: { start: Date; end: Date },
+  timeZone: string
+) {
   const startTime = dayjs(start).tz(timeZone);
-  return `${startTime.format(`dddd, LL`)} | ${startTime.format("h:mma")} - ${dayjs(end)
+  return `${startTime.format(`dddd, LL`)} | ${startTime.format("h:mma")} - ${dayjs(
+    end
+  )
     .tz(timeZone)
     .format("h:mma")} (${timeZone})`;
 }
@@ -88,13 +97,22 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace jest {
     interface Matchers<R> {
-      toHaveEmail(expectedEmail: ExpectedEmail, to: string, subject?: string): R;
+      toHaveEmail(
+        expectedEmail: ExpectedEmail,
+        to: string,
+        subject?: string
+      ): R;
     }
   }
 }
 
 expect.extend({
-  toHaveEmail(emails: Fixtures["emails"], expectedEmail: ExpectedEmail, to: string, subject?: string) {
+  toHaveEmail(
+    emails: Fixtures["emails"],
+    expectedEmail: ExpectedEmail,
+    to: string,
+    subject?: string
+  ) {
     const { isNot } = this;
     const testEmail = emails.get().find((email) => {
       const filterConditions = [email.to.includes(to)];
@@ -108,21 +126,33 @@ expect.extend({
 
     const emailsToLog = emails
       .get()
-      .map((email) => ({ to: email.to, html: email.html, ics: email.icalEvent }));
+      .map((email) => ({
+        to: email.to,
+        html: email.html,
+        ics: email.icalEvent,
+      }));
 
     if (!testEmail) {
-      logger.silly("All Emails", JSON.stringify({ numEmails: emailsToLog.length, emailsToLog }));
+      logger.silly(
+        "All Emails",
+        JSON.stringify({ numEmails: emailsToLog.length, emailsToLog })
+      );
       return {
         pass: false,
-        message: () => `No email sent to ${to}. All emails are ${JSON.stringify(emailsToLog)}`,
+        message: () =>
+          `No email sent to ${to}. All emails are ${JSON.stringify(emailsToLog)}`,
       };
     }
     const ics = testEmail.icalEvent;
     const icsObject = ics?.content ? ical.sync.parseICS(ics?.content) : null;
-    const iCalUidData = icsObject ? icsObject[expectedEmail.ics?.iCalUID || ""] : null;
+    const iCalUidData = icsObject
+      ? icsObject[expectedEmail.ics?.iCalUID || ""]
+      : null;
 
     let isToAddressExpected = true;
-    const isIcsFilenameExpected = expectedEmail.ics ? ics?.filename === expectedEmail.ics.filename : true;
+    const isIcsFilenameExpected = expectedEmail.ics
+      ? ics?.filename === expectedEmail.ics.filename
+      : true;
     const isIcsUIDExpected =
       expectedEmail.ics && expectedEmail.ics.iCalUID
         ? !!(icsObject ? icsObject[expectedEmail.ics.iCalUID] : null)
@@ -132,7 +162,8 @@ expect.extend({
     const actualEmailContent = {
       titleTag: emailDom.querySelector("title")?.innerText,
       heading: emailDom.querySelector('[data-testid="heading"]')?.innerText,
-      subHeading: emailDom.querySelector('[data-testid="subHeading"]')?.innerText,
+      subHeading: emailDom.querySelector('[data-testid="subHeading"]')
+        ?.innerText,
       when: emailDom.querySelector('[data-testid="when"]')?.innerText,
       links: emailDom.querySelectorAll("a[href]").map((link) => ({
         text: link.innerText,
@@ -141,7 +172,10 @@ expect.extend({
     };
 
     const expectedEmailContent = getExpectedEmailContent(expectedEmail);
-    assertHasRecurrence(expectedEmail.ics?.recurrence, (iCalUidData as VEvent)?.rrule?.toString() || "");
+    assertHasRecurrence(
+      expectedEmail.ics?.recurrence,
+      (iCalUidData as VEvent)?.rrule?.toString() || ""
+    );
 
     const isEmailContentMatched = this.equals(
       actualEmailContent,
@@ -149,7 +183,10 @@ expect.extend({
     );
 
     if (!isEmailContentMatched) {
-      logger.silly("All Emails", JSON.stringify({ numEmails: emailsToLog.length, emailsToLog }));
+      logger.silly(
+        "All Emails",
+        JSON.stringify({ numEmails: emailsToLog.length, emailsToLog })
+      );
       return {
         pass: false,
         message: () => `Email content ${isNot ? "is" : "is not"} matching.`,
@@ -160,7 +197,10 @@ expect.extend({
 
     isToAddressExpected = expectedEmail.to === testEmail.to;
     if (!isToAddressExpected) {
-      logger.silly("All Emails", JSON.stringify({ numEmails: emailsToLog.length, emailsToLog }));
+      logger.silly(
+        "All Emails",
+        JSON.stringify({ numEmails: emailsToLog.length, emailsToLog })
+      );
       return {
         pass: false,
         message: () => `To address ${isNot ? "is" : "is not"} matching`,
@@ -188,21 +228,25 @@ expect.extend({
         //@ts-ignore
         actual: icsObject[icsKey].uid!,
         expected: expectedEmail.ics?.iCalUID,
-        message: () => `Expected ICS UID ${isNot ? "is" : "isn't"} present in actual`,
+        message: () =>
+          `Expected ICS UID ${isNot ? "is" : "isn't"} present in actual`,
       };
     }
 
     if (expectedEmail.noIcs && ics) {
       return {
         pass: false,
-        message: () => `${isNot ? "" : "Not"} expected ics file ${JSON.stringify(ics)}`,
+        message: () =>
+          `${isNot ? "" : "Not"} expected ics file ${JSON.stringify(ics)}`,
       };
     }
 
     if (expectedEmail.appsStatus) {
-      const actualAppsStatus = emailDom.querySelectorAll('[data-testid="appsStatus"] li').map((li) => {
-        return li.innerText.trim();
-      });
+      const actualAppsStatus = emailDom
+        .querySelectorAll('[data-testid="appsStatus"] li')
+        .map((li) => {
+          return li.innerText.trim();
+        });
       const expectedAppStatus = expectedEmail.appsStatus.map((appStatus) => {
         if (appStatus.success && !appStatus.failures) {
           return `${appStatus.appName} ✅`;
@@ -210,7 +254,10 @@ expect.extend({
         return `${appStatus.appName} ❌`;
       });
 
-      const isAppsStatusCorrect = this.equals(actualAppsStatus, expectedAppStatus);
+      const isAppsStatusCorrect = this.equals(
+        actualAppsStatus,
+        expectedAppStatus
+      );
 
       if (!isAppsStatusCorrect) {
         return {
@@ -243,25 +290,39 @@ expect.extend({
         titleTag: expectedEmail.titleTag,
         heading: expectedEmail.heading,
         subHeading: expectedEmail.subHeading,
-        when: when ? (expectedEmail.ics?.recurrence ? `starting ${when}` : `${when}`) : undefined,
+        when: when
+          ? expectedEmail.ics?.recurrence
+            ? `starting ${when}`
+            : `${when}`
+          : undefined,
         links: expect.arrayContaining(expectedEmail.links || []),
       };
       // Remove undefined props so that they aren't matched, they are intentionally left undefined because we don't want to match them
       Object.keys(expectedEmailContent).filter((key) => {
-        if (expectedEmailContent[key as keyof typeof expectedEmailContent] === undefined) {
+        if (
+          expectedEmailContent[key as keyof typeof expectedEmailContent] ===
+          undefined
+        ) {
           delete expectedEmailContent[key as keyof typeof expectedEmailContent];
         }
       });
       return expectedEmailContent;
     }
 
-    function assertHasRecurrence(expectedRecurrence: Recurrence | null | undefined, rrule: string) {
+    function assertHasRecurrence(
+      expectedRecurrence: Recurrence | null | undefined,
+      rrule: string
+    ) {
       if (!expectedRecurrence) {
         return;
       }
 
       const expectedRrule = `FREQ=${
-        expectedRecurrence.freq === 0 ? "YEARLY" : expectedRecurrence.freq === 1 ? "MONTHLY" : "WEEKLY"
+        expectedRecurrence.freq === 0
+          ? "YEARLY"
+          : expectedRecurrence.freq === 1
+            ? "MONTHLY"
+            : "WEEKLY"
       };COUNT=${expectedRecurrence.count};INTERVAL=${expectedRecurrence.interval}`;
 
       logger.silly({
@@ -307,16 +368,29 @@ export function expectWebhookToHaveBeenCalledWith(
   if (parsedBody.payload) {
     if (data.payload) {
       if (data.payload.metadata) {
-        expect(parsedBody.payload.metadata).toEqual(expect.objectContaining(data.payload.metadata));
+        expect(parsedBody.payload.metadata).toEqual(
+          expect.objectContaining(data.payload.metadata)
+        );
       }
       if (data.payload.responses)
-        expect(parsedBody.payload.responses).toEqual(expect.objectContaining(data.payload.responses));
+        expect(parsedBody.payload.responses).toEqual(
+          expect.objectContaining(data.payload.responses)
+        );
 
       if (data.payload.organizer)
-        expect(parsedBody.payload.organizer).toEqual(expect.objectContaining(data.payload.organizer));
+        expect(parsedBody.payload.organizer).toEqual(
+          expect.objectContaining(data.payload.organizer)
+        );
 
-      const { responses: _1, metadata: _2, organizer: _3, ...remainingPayload } = data.payload;
-      expect(parsedBody.payload).toEqual(expect.objectContaining(remainingPayload));
+      const {
+        responses: _1,
+        metadata: _2,
+        organizer: _3,
+        ...remainingPayload
+      } = data.payload;
+      expect(parsedBody.payload).toEqual(
+        expect.objectContaining(remainingPayload)
+      );
     }
   }
 }
@@ -373,7 +447,9 @@ export function expectSMSWorkflowToBeTriggered({
 }) {
   const allSMS = sms.get();
   if (includedString) {
-    const messageWithIncludedString = allSMS.find((sms) => sms.message.includes(includedString));
+    const messageWithIncludedString = allSMS.find((sms) =>
+      sms.message.includes(includedString)
+    );
 
     expect(messageWithIncludedString?.to).toBe(toNumber);
   } else {
@@ -399,7 +475,9 @@ export function expectSMSWorkflowToBeNotTriggered({
   const allSMS = sms.get();
 
   if (includedString) {
-    const messageWithIncludedString = allSMS.find((sms) => sms.message.includes(includedString));
+    const messageWithIncludedString = allSMS.find((sms) =>
+      sms.message.includes(includedString)
+    );
 
     if (messageWithIncludedString) {
       expect(messageWithIncludedString?.to).not.toBe(toNumber);
@@ -416,7 +494,8 @@ export function expectSMSWorkflowToBeNotTriggered({
 }
 
 export async function expectBookingToBeInDatabase(
-  booking: Partial<Booking> & Pick<Booking, "uid"> & { references?: Partial<BookingReference>[] }
+  booking: Partial<Booking> &
+    Pick<Booking, "uid"> & { references?: Partial<BookingReference>[] }
 ) {
   const actualBooking = await prismaMock.booking.findUnique({
     where: {
@@ -430,11 +509,16 @@ export async function expectBookingToBeInDatabase(
   const { references, ...remainingBooking } = booking;
   expect(actualBooking).toEqual(expect.objectContaining(remainingBooking));
   expect(actualBooking?.references).toEqual(
-    expect.arrayContaining((references || []).map((reference) => expect.objectContaining(reference)))
+    expect.arrayContaining(
+      (references || []).map((reference) => expect.objectContaining(reference))
+    )
   );
 }
 
-export async function expectBookingTrackingToBeInDatabase(tracking: Tracking, uid?: string) {
+export async function expectBookingTrackingToBeInDatabase(
+  tracking: Tracking,
+  uid?: string
+) {
   const actualBooking = await prismaMock.booking.findUnique({
     where: {
       uid,
@@ -446,7 +530,13 @@ export async function expectBookingTrackingToBeInDatabase(tracking: Tracking, ui
   expect(actualBooking?.tracking).toEqual(expect.objectContaining(tracking));
 }
 
-export function expectSMSToBeTriggered({ sms, toNumber }: { sms: Fixtures["sms"]; toNumber: string }) {
+export function expectSMSToBeTriggered({
+  sms,
+  toNumber,
+}: {
+  sms: Fixtures["sms"];
+  toNumber: string;
+}) {
   expect(sms.get()).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
@@ -486,7 +576,9 @@ export function expectSuccessfulBookingCreationEmails({
   expect(emails).toHaveEmail(
     {
       titleTag: "confirmed_event_type_subject",
-      heading: recurrence ? "new_event_scheduled_recurring" : "new_event_scheduled",
+      heading: recurrence
+        ? "new_event_scheduled_recurring"
+        : "new_event_scheduled",
       subHeading: "",
       links: recurrence
         ? [
@@ -533,7 +625,9 @@ export function expectSuccessfulBookingCreationEmails({
   expect(emails).toHaveEmail(
     {
       titleTag: "confirmed_event_type_subject",
-      heading: recurrence ? "your_event_has_been_scheduled_recurring" : "your_event_has_been_scheduled",
+      heading: recurrence
+        ? "your_event_has_been_scheduled_recurring"
+        : "your_event_has_been_scheduled",
       subHeading: "emailed_you_and_any_other_attendees",
       ...(bookingTimeRange
         ? {
@@ -577,7 +671,9 @@ export function expectSuccessfulBookingCreationEmails({
       expect(emails).toHaveEmail(
         {
           titleTag: "confirmed_event_type_subject",
-          heading: recurrence ? "new_event_scheduled_recurring" : "new_event_scheduled",
+          heading: recurrence
+            ? "new_event_scheduled_recurring"
+            : "new_event_scheduled",
           subHeading: "",
           ...(bookingTimeRange
             ? {
@@ -621,7 +717,9 @@ export function expectSuccessfulBookingCreationEmails({
       expect(emails).toHaveEmail(
         {
           titleTag: "confirmed_event_type_subject",
-          heading: recurrence ? "your_event_has_been_scheduled_recurring" : "your_event_has_been_scheduled",
+          heading: recurrence
+            ? "your_event_has_been_scheduled_recurring"
+            : "your_event_has_been_scheduled",
           subHeading: "emailed_you_and_any_other_attendees",
           ...(bookingTimeRange
             ? {
@@ -1040,7 +1138,12 @@ export function expectBookingCreatedWebhookToHaveBeenFired({
   isEmailHidden = false,
   isAttendeePhoneNumberHidden = false,
 }: {
-  organizer: { email: string; name: string; username?: string; usernameInOrg?: string };
+  organizer: {
+    email: string;
+    name: string;
+    username?: string;
+    usernameInOrg?: string;
+  };
   booker: { email: string; name: string; attendeePhoneNumber?: string };
   subscriberUrl: string;
   location: string;
@@ -1051,7 +1154,9 @@ export function expectBookingCreatedWebhookToHaveBeenFired({
 }) {
   const organizerPayload = {
     username: organizer.username,
-    ...(organizer.usernameInOrg ? { usernameInOrg: organizer.usernameInOrg } : null),
+    ...(organizer.usernameInOrg
+      ? { usernameInOrg: organizer.usernameInOrg }
+      : null),
   };
 
   if (!paidEvent) {
@@ -1063,7 +1168,11 @@ export function expectBookingCreatedWebhookToHaveBeenFired({
         },
         responses: {
           name: { label: "your_name", value: booker.name, isHidden: false },
-          email: { label: "email_address", value: booker.email, isHidden: isEmailHidden },
+          email: {
+            label: "email_address",
+            value: booker.email,
+            isHidden: isEmailHidden,
+          },
           ...(booker.attendeePhoneNumber
             ? {
                 attendeePhoneNumber: {
@@ -1158,7 +1267,12 @@ export function expectBookingCancelledWebhookToHaveBeenFired({
   subscriberUrl,
   payload,
 }: {
-  organizer: { email: string; name: string; username?: string; usernameInOrg?: string };
+  organizer: {
+    email: string;
+    name: string;
+    username?: string;
+    usernameInOrg?: string;
+  };
   booker: { email: string; name: string };
   subscriberUrl: string;
   location: string;
@@ -1166,7 +1280,9 @@ export function expectBookingCancelledWebhookToHaveBeenFired({
 }) {
   const organizerPayload = {
     username: organizer.username,
-    ...(organizer.usernameInOrg ? { usernameInOrg: organizer.usernameInOrg } : null),
+    ...(organizer.usernameInOrg
+      ? { usernameInOrg: organizer.usernameInOrg }
+      : null),
   };
 
   expectWebhookToHaveBeenCalledWith(subscriberUrl, {
@@ -1270,7 +1386,11 @@ export function expectSuccessfulCalendarEventCreationInCalendar(
       expect(calEvent).toEqual(
         expect.objectContaining({
           destinationCalendar: expected.destinationCalendars
-            ? expect.arrayContaining(expected.destinationCalendars.map((cal) => expect.objectContaining(cal)))
+            ? expect.arrayContaining(
+                expected.destinationCalendars.map((cal) =>
+                  expect.objectContaining(cal)
+                )
+              )
             : null,
         })
       );
@@ -1399,7 +1519,13 @@ export function expectSuccessfulVideoMeetingDeletionInCalendar(
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function expectBookingInDBToBeRescheduledFromTo({ from, to }: { from: any; to: any }) {
+export async function expectBookingInDBToBeRescheduledFromTo({
+  from,
+  to,
+}: {
+  from: any;
+  to: any;
+}) {
   // Expect previous booking to be cancelled
   await expectBookingToBeInDatabase({
     ...from,
@@ -1433,13 +1559,19 @@ export async function expectBookingToNotHaveReference(
     },
   });
 
-  expect(actualBooking?.references).not.toEqual(expect.arrayContaining([expect.objectContaining(reference)]));
+  expect(actualBooking?.references).not.toEqual(
+    expect.arrayContaining([expect.objectContaining(reference)])
+  );
 }
 
-export function expectNoAttemptToCreateCalendarEvent(calendarMock: CalendarServiceMethodMock) {
+export function expectNoAttemptToCreateCalendarEvent(
+  calendarMock: CalendarServiceMethodMock
+) {
   expect(calendarMock.createEventCalls.length).toBe(0);
 }
 
-export function expectNoAttemptToGetAvailability(calendarMock: CalendarServiceMethodMock) {
+export function expectNoAttemptToGetAvailability(
+  calendarMock: CalendarServiceMethodMock
+) {
   expect(calendarMock.getAvailabilityCalls.length).toBe(0);
 }

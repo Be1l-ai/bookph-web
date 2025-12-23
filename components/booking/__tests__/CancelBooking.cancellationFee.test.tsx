@@ -10,7 +10,7 @@ beforeAll(() => {
   Element.prototype.scrollIntoView = vi.fn();
 });
 
-vi.mock("@calcom/trpc", () => ({
+vi.mock("@bookph/core/trpc", () => ({
   trpc: {
     viewer: {
       bookings: {
@@ -42,7 +42,7 @@ vi.mock("next-i18next", () => ({
   }),
 }));
 
-vi.mock("@calcom/lib/hooks/useLocale", () => ({
+vi.mock("@bookph/core/lib/hooks/useLocale", () => ({
   useLocale: () => ({
     t: (key: string, options?: Record<string, unknown>) => {
       if (key === "cancel_booking_acknowledge_no_show_fee") {
@@ -59,7 +59,7 @@ vi.mock("@calcom/lib/hooks/useLocale", () => ({
   }),
 }));
 
-vi.mock("@calcom/lib/hooks/useRefreshData", () => ({
+vi.mock("@bookph/core/lib/hooks/useRefreshData", () => ({
   useRefreshData: () => vi.fn(),
 }));
 
@@ -70,7 +70,7 @@ vi.mock("next/router", () => ({
   }),
 }));
 
-vi.mock("@calcom/features/bookings/lib/payment/shouldChargeNoShowCancellationFee", () => ({
+vi.mock("@bookph/core/features/bookings/lib/payment/shouldChargeNoShowCancellationFee", () => ({
   shouldChargeNoShowCancellationFee: vi.fn(),
 }));
 
